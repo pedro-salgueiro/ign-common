@@ -53,13 +53,13 @@ void NodeTransform::Set(const math::Matrix4d &_mat)
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::Type(const NodeTransformType _type)
+void NodeTransform::SetType(const NodeTransformType _type)
 {
   this->data->type = _type;
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::SID(const std::string &_sid)
+void NodeTransform::SetSID(const std::string &_sid)
 {
   this->data->sid = _sid;
 }
@@ -83,13 +83,13 @@ std::string NodeTransform::SID() const
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::Component(const unsigned int _idx, const double _value)
+void NodeTransform::SetComponent(const unsigned int _idx, const double _value)
 {
   this->data->source[_idx] = _value;
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::SourceValues(const math::Matrix4d &_mat)
+void NodeTransform::SetSourceValues(const math::Matrix4d &_mat)
 {
   this->data->source.resize(16);
   unsigned int idx = 0;
@@ -103,7 +103,7 @@ void NodeTransform::SourceValues(const math::Matrix4d &_mat)
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::SourceValues(const math::Vector3d &_vec)
+void NodeTransform::SetSourceValues(const math::Vector3d &_vec)
 {
   this->data->source.resize(3);
   this->data->source[0] = _vec.X();
@@ -112,7 +112,7 @@ void NodeTransform::SourceValues(const math::Vector3d &_vec)
 }
 
 //////////////////////////////////////////////////
-void NodeTransform::SourceValues(const math::Vector3d &_axis,
+void NodeTransform::SetSourceValues(const math::Vector3d &_axis,
     const double _angle)
 {
   this->data->source.resize(4);
