@@ -2,6 +2,7 @@ include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
   Animation.hh
+  Assert.hh
   AudioDecoder.hh
   BVHLoader.hh
   Color.hh

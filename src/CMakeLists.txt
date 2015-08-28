@@ -3,6 +3,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set (sources
   Animation.cc
+  Assert.cc
   AudioDecoder.cc
   BVHLoader.cc
   Color.cc
