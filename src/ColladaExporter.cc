@@ -46,7 +46,7 @@ class ignition::common::ColladaExporterPrivate
   /// \param[in] _type POSITION, NORMAL or UVMAP
   /// \param[in] _meshID Mesh ID (mesh_<number>)
   public: void ExportGeometrySource(
-      const SubMesh *_subMesh,
+      const SubMeshPtr _subMesh,
       tinyxml2::XMLElement *_meshXml, GeometryType _type, const char *_meshID);
 
   /// \brief Export library geometries element
@@ -224,7 +224,7 @@ void ColladaExporterPrivate::ExportAsset(tinyxml2::XMLElement *_assetXml)
 
 //////////////////////////////////////////////////
 void ColladaExporterPrivate::ExportGeometrySource(
-    const ignition::common::SubMesh *_subMesh,
+    const ignition::common::SubMeshPtr _subMesh,
     tinyxml2::XMLElement *_meshXml, GeometryType _type, const char *_meshID)
 {
   char sourceId[100], sourceArrayId[100];
@@ -346,15 +346,15 @@ void ColladaExporterPrivate::ExportGeometries(
       _libraryGeometriesXml->GetDocument()->NewElement("mesh");
     geometryXml->LinkEndChild(meshXml);
 
-    std::shared_ptr<SubMesh> subMesh = this->mesh->SubMeshByIndex(i).lock();
-    if (!subMesh)
+    SubMeshPtr subMesh = this->mesh->SubMeshByIndex(i);
+    if (subMesh == nullptr)
       continue;
 
-    this->ExportGeometrySource(subMesh.get(), meshXml, POSITION, meshId);
-    this->ExportGeometrySource(subMesh.get(), meshXml, NORMAL, meshId);
+    this->ExportGeometrySource(subMesh, meshXml, POSITION, meshId);
+    this->ExportGeometrySource(subMesh, meshXml, NORMAL, meshId);
     if (subMesh->TexCoordCount() != 0)
     {
-      this->ExportGeometrySource(subMesh.get(), meshXml, UVMAP, meshId);
+      this->ExportGeometrySource(subMesh, meshXml, UVMAP, meshId);
     }
 
     char attributeValue[100];
@@ -709,7 +709,7 @@ void ColladaExporterPrivate::ExportVisualScenes(
     const ignition::common::MaterialPtr material =
       this->mesh->MaterialByIndex(i);
 
-    if (material)
+    if (material != nullptr)
     {
       tinyxml2::XMLElement *bindMaterialXml =
         _libraryVisualScenesXml->GetDocument()->NewElement("bind_material");

@@ -67,9 +67,9 @@ TEST_F(MeshManager, CreateExtrudedPolyline)
   EXPECT_EQ(submeshCount, 1u);
 
   // check submesh bounds
-  auto submesh = mesh->SubMeshByIndex(0).lock();
+  auto submesh = mesh->SubMeshByIndex(0);
   EXPECT_TRUE(submesh != nullptr);
-  EXPECT_EQ(ignition::math::Vector3d(0, 0, 0), submesh->Min());
+  EXPECT_EQ(ignition::math::Vector3d::Zero, submesh->Min());
   EXPECT_EQ(ignition::math::Vector3d(1.0, 1.0, 10.0), submesh->Max());
 
   // check vertices
@@ -171,7 +171,7 @@ TEST_F(MeshManager, CreateExtrudedPolylineClosedPath)
   EXPECT_EQ(submeshCount, 1u);
 
   // check submesh bounds
-  auto submesh = mesh->SubMeshByIndex(0).lock();
+  auto submesh = mesh->SubMeshByIndex(0);
   EXPECT_TRUE(submesh != nullptr);
   EXPECT_EQ(submesh->Min(), ignition::math::Vector3d(1.11704, 0.7599, 0));
   EXPECT_EQ(submesh->Max(), ignition::math::Vector3d(3.4323, 3.28672, 2.0));

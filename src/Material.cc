@@ -85,11 +85,19 @@ class ignition::common::MaterialPrivate
 unsigned int MaterialPrivate::counter = 0;
 
 //////////////////////////////////////////////////
-Material::Material()
+Material::Material(const std::string &_name)
 : dataPtr(new MaterialPrivate)
 {
-  this->dataPtr->name = "ignition_material_" +
-    std::to_string(this->dataPtr->counter++);
+  if (_name.empty())
+  {
+    this->dataPtr->name = "ignition_material_" +
+      std::to_string(this->dataPtr->counter++);
+  }
+  else
+  {
+    this->dataPtr->name = _name;
+  }
+
   this->dataPtr->blendMode = REPLACE;
   this->dataPtr->shadeMode = GOURAUD;
   this->dataPtr->transparency = 0;
@@ -114,6 +122,28 @@ Material::Material(const Color &_clr)
   this->dataPtr->ambient = _clr;
   this->dataPtr->diffuse = _clr;
   this->dataPtr->lighting = false;
+}
+
+//////////////////////////////////////////////////
+Material::Material(const Material &_mat)
+  : dataPtr(new MaterialPrivate)
+{
+  this->dataPtr->name = _mat.dataPtr->name;
+  this->dataPtr->texImage = _mat.dataPtr->texImage;
+  this->dataPtr->ambient = _mat.dataPtr->ambient;
+  this->dataPtr->diffuse = _mat.dataPtr->diffuse;
+  this->dataPtr->specular = _mat.dataPtr->specular;
+  this->dataPtr->emissive = _mat.dataPtr->emissive;
+  this->dataPtr->transparency = _mat.dataPtr->transparency;
+  this->dataPtr->shininess = _mat.dataPtr->shininess;
+  this->dataPtr->pointSize = _mat.dataPtr->pointSize;
+  this->dataPtr->blendMode = _mat.dataPtr->blendMode;
+  this->dataPtr->shadeMode = _mat.dataPtr->shadeMode;
+  this->dataPtr->counter = _mat.dataPtr->counter;
+  this->dataPtr->depthWrite = _mat.dataPtr->depthWrite;
+  this->dataPtr->lighting = _mat.dataPtr->lighting;
+  this->dataPtr->srcBlendFactor = _mat.dataPtr->srcBlendFactor;
+  this->dataPtr->dstBlendFactor = _mat.dataPtr->dstBlendFactor;
 }
 
 //////////////////////////////////////////////////
@@ -318,4 +348,3 @@ std::string Material::ShadeStr() const
 {
   return shadeModeIface.Str(this->Shade());
 }
-

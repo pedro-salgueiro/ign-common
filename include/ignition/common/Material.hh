@@ -85,7 +85,12 @@ namespace ignition
       };
 
       /// \brief Constructor
-      public: Material();
+      /// \param[in] _name Name of the material.
+      public: explicit Material(const std::string &_name = "");
+
+      /// \brief Copy constructor
+      /// \param[in] _mat Material to copy.
+      public: Material(const Material &_mat);
 
       /// \brief Destructor
       public: ~Material();

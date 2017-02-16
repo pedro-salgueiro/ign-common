@@ -71,11 +71,10 @@ TEST_F(MeshTest, Mesh)
   EXPECT_EQ(mesh->TexCoordCount(), 1u);
   EXPECT_EQ(mesh->IndexCount(), 1u);
   EXPECT_EQ(mesh->SubMeshCount(), 1u);
-  EXPECT_EQ(mesh->SubMeshByIndex(0).lock().get(), submesh.lock().get());
-  EXPECT_EQ(mesh->SubMeshByName("new_submesh").lock().get(),
-      submesh.lock().get());
-  EXPECT_TRUE(mesh->SubMeshByIndex(1u).lock() == nullptr);
-  EXPECT_TRUE(mesh->SubMeshByName("no_such_submesh").lock() == nullptr);
+  EXPECT_EQ(mesh->SubMeshByIndex(0), submesh);
+  EXPECT_EQ(mesh->SubMeshByName("new_submesh"), submesh);
+  EXPECT_TRUE(mesh->SubMeshByIndex(1u) == nullptr);
+  EXPECT_TRUE(mesh->SubMeshByName("no_such_submesh") == nullptr);
 
   EXPECT_EQ(mesh->Min(), v0);
   EXPECT_EQ(mesh->Max(), v0);
@@ -92,56 +91,53 @@ TEST_F(MeshTest, Mesh)
   // scale
   math::Vector3d scale(2, 0.25, 4);
   mesh->SetScale(scale);
-  EXPECT_EQ(submesh.lock()->Vertex(0), v0 * scale);
-  EXPECT_EQ(submesh.lock()->Normal(0), n0);
-  EXPECT_EQ(submesh.lock()->TexCoord(0), uv0);
+  EXPECT_EQ(submesh->Vertex(0), v0 * scale);
+  EXPECT_EQ(submesh->Normal(0), n0);
+  EXPECT_EQ(submesh->TexCoord(0), uv0);
 
   mesh->Scale(scale);
-  EXPECT_EQ(submesh.lock()->Vertex(0), v0 * scale * scale);
-  EXPECT_EQ(submesh.lock()->Normal(0), n0);
-  EXPECT_EQ(submesh.lock()->TexCoord(0), uv0);
+  EXPECT_EQ(submesh->Vertex(0), v0 * scale * scale);
+  EXPECT_EQ(submesh->Normal(0), n0);
+  EXPECT_EQ(submesh->TexCoord(0), uv0);
 
   // translate
   math::Vector3d t0(2, 3, -12);
   mesh->Translate(t0);
-  EXPECT_EQ(submesh.lock()->Vertex(0), v0 * scale * scale + t0);
-  EXPECT_EQ(submesh.lock()->Normal(0), n0);
-  EXPECT_EQ(submesh.lock()->TexCoord(0), uv0);
+  EXPECT_EQ(submesh->Vertex(0), v0 * scale * scale + t0);
+  EXPECT_EQ(submesh->Normal(0), n0);
+  EXPECT_EQ(submesh->TexCoord(0), uv0);
 
   // center
   math::Vector3d c0(0.1, 3, 1);
   mesh->Center(c0);
 
   math::Vector3d t = c0 - (min + t0 + (max-min)/2);
-  EXPECT_EQ(submesh.lock()->Vertex(0), v0 + t0 + t);
+  EXPECT_EQ(submesh->Vertex(0), v0 + t0 + t);
 
   // add material
-  common::MaterialPtr material(new common::Material());
+  common::Material *material(new common::Material());
   EXPECT_TRUE(material != nullptr);
 
   mesh->AddMaterial(material);
+  EXPECT_TRUE(material != nullptr);
+
   EXPECT_EQ(mesh->MaterialCount(), 1u);
-  EXPECT_EQ(mesh->MaterialByIndex(0u), material);
+  EXPECT_FALSE(mesh->MaterialByIndex(0u) == nullptr);
   EXPECT_TRUE(mesh->MaterialByIndex(1u) == nullptr);
-  EXPECT_EQ(mesh->IndexOfMaterial(material.get()), 0);
-  EXPECT_EQ(mesh->IndexOfMaterial(nullptr), -1);
 
   // skeleton
-  common::SkeletonPtr skeleton(new common::Skeleton());
-  EXPECT_TRUE(skeleton != nullptr);
   EXPECT_FALSE(mesh->HasSkeleton());
-  mesh->SetSkeleton(skeleton);
+  common::SkeletonPtr skeleton = mesh->MeshSkeleton();
   EXPECT_TRUE(mesh->HasSkeleton());
-  EXPECT_EQ(mesh->MeshSkeleton(), skeleton);
 
   // recalculate normals
   // (should not have changed since it requires at least 3 normals)
   mesh->RecalculateNormals();
-  EXPECT_EQ(submesh.lock()->Normal(0), n0);
+  EXPECT_EQ(submesh->Normal(0), n0);
 
   // GenSphericalTexCoord
   mesh->GenSphericalTexCoord(math::Vector3d::Zero);
-  EXPECT_NE(submesh.lock()->TexCoord(0), uv0);
+  EXPECT_NE(submesh->TexCoord(0), uv0);
 
   // fill array
   double *vertices = NULL;
@@ -149,10 +145,10 @@ TEST_F(MeshTest, Mesh)
   vertices = new double[3];
   indices = new int[1];
   mesh->FillArrays(&vertices, &indices);
-  EXPECT_TRUE(math::equal(vertices[0], submesh.lock()->Vertex(0).X()));
-  EXPECT_TRUE(math::equal(vertices[1], submesh.lock()->Vertex(0).Y()));
-  EXPECT_TRUE(math::equal(vertices[2], submesh.lock()->Vertex(0).Z()));
-  EXPECT_EQ(indices[0], submesh.lock()->Index(0));
+  EXPECT_TRUE(math::equal(vertices[0], submesh->Vertex(0).X()));
+  EXPECT_TRUE(math::equal(vertices[1], submesh->Vertex(0).Y()));
+  EXPECT_TRUE(math::equal(vertices[2], submesh->Vertex(0).Z()));
+  EXPECT_EQ(indices[0], submesh->Index(0));
 }
 
 /////////////////////////////////////////////////

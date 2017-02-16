@@ -46,12 +46,12 @@ TEST_F(OBJLoaderTest, LoadObjBox)
   EXPECT_EQ(1u, mesh->MaterialCount());
 
   // Make sure we can read the submesh name
-  EXPECT_STREQ("Cube_Cube.001", mesh->SubMeshByIndex(0).lock()->Name().c_str());
+  EXPECT_STREQ("Cube_Cube.001", mesh->SubMeshByIndex(0)->Name().c_str());
 
   EXPECT_EQ(mesh->MaterialCount(), 1u);
 
   const common::MaterialPtr mat = mesh->MaterialByIndex(0u);
-  ASSERT_TRUE(mat.get());
+  ASSERT_TRUE(mat != nullptr);
 
   // Make sure we read the material color values
   EXPECT_EQ(mat->Ambient(), common::Color(0.0, 0.0, 0.0, 1.0));

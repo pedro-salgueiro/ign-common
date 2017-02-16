@@ -84,55 +84,61 @@ namespace ignition
       /// \return The number of texture coordinates
       public: unsigned int TexCoordCount() const;
 
+      /// \brief Create a new submesh object that is added to this mesh.
+      /// A reference to this new submesh is returned.
+      /// \param[in] _name Name of the new submesh.
+      /// \return A shared pointer to the new submesh.
+      public: SubMeshPtr AddSubMesh(const std::string &_name = "");
+
       /// \brief Add a submesh mesh.
       /// This can be an expensive since _child is copied into this mesh.
       /// \sa AddSubMesh(std::unique_ptr<SubMesh> _child);
       /// \param[in] _child the submesh
-      /// \return Weak pointer to the added submesh
-      public: std::weak_ptr<SubMesh> AddSubMesh(const SubMesh &_child);
-
-      /// \brief Add a submesh mesh. This transfers ownership of _child
-      /// to this mesh. The value of _child after this call is nullptr.
-      /// \param[in] _child the submesh
-      /// \return Weak pointer to the added submesh
-      public: std::weak_ptr<SubMesh> AddSubMesh(
-                  std::unique_ptr<SubMesh> _child);
+      /// \return A shared pointer to the new submesh.
+      public: SubMeshPtr AddSubMesh(const SubMesh &_child);
 
       /// \brief Get the number of child submeshes.
       /// \return The number of submeshes.
       public: unsigned int SubMeshCount() const;
 
-      /// \brief Add a material to the mesh
+      /// \brief Add a material to the mesh.
+      /// This can be an expensive since _mat is copied into this mesh.
       /// \param[in] _mat The material to add.
-      /// \return Index of this material
-      public: int AddMaterial(const MaterialPtr &_mat);
+      /// \return Index of the new material, or -1 on error
+      public: int AddMaterial(const Material &_mat);
+
+      /// \brief Add a material to the mesh.
+      /// This can be an expensive since _mat is copied into this mesh.
+      /// \param[in] _mat The material to add.
+      /// \return Index of the new material, or -1 on error
+      public: int AddMaterial(const Material *_mat);
 
       /// \brief Get the number of materials
       /// \return The number of materials
       public: unsigned int MaterialCount() const;
 
+      /// \brief Get the index of material using a material's name.
+      /// \return The material index of the specified name, or -1 if the
+      /// material is not found.
+      public: int MaterialIndex(const std::string &_name) const;
+
       /// \brief Get a material by index
       /// \param[in] _index The index of the material.
-      /// \return The material or NULL if the index is out of bounds
+      /// \return A shared pointer to the material or nullptr if the index is
+      /// out of bounds
       public: MaterialPtr MaterialByIndex(const unsigned int _index) const;
-
-      /// \brief Get the index of material
-      /// \param[in] _mat The material
-      /// \return The index of the material or -1 if not found, or _mat is
-      /// null.
-      public: int IndexOfMaterial(const Material *_mat) const;
 
       /// \brief Get a child submesh by index
       /// \param[in] _index Index of the submesh
-      /// \return The submesh or nullptr if the index is out of bounds.
-      public: std::weak_ptr<SubMesh> SubMeshByIndex(
-                  const unsigned int _index) const;
+      /// \return A shared pointer to the submesh or nullptr if the _index
+      /// is invalid.
+      public: SubMeshPtr SubMeshByIndex(const unsigned int _index) const;
 
       /// \brief Get a child submesh by name.
       /// \param[in] _name Name of the submesh.
-      /// \return The submesh or nullptr if the _name is not found.
-      public: std::weak_ptr<SubMesh> SubMeshByName(
-                  const std::string &_name) const;
+      /// \return A shared pointer to the submesh or nullptr if the _name is
+      /// not found.
+      public: SubMeshPtr SubMeshByName(const std::string &_name) const;
 
       /// \brief Put all the data into flat arrays
       /// \param[out] _vertArr the vertex array
@@ -158,20 +164,20 @@ namespace ignition
                   const ignition::math::Vector3d &_center);
 
       /// \brief Get the skeleton to which this mesh is attached.
-      /// \return Pointer to skeleton or NULL if none is present.
+      /// \return Shared pointer to the skeleton.
       public: SkeletonPtr MeshSkeleton() const;
-
-      /// \brief Set the mesh skeleton
-      /// \param[in] _skel Skeleton to attach to the mesh.
-      public: void SetSkeleton(const SkeletonPtr &_skel);
 
       /// \brief Check if mesh is attached to a skeleton.
       /// \return True if mesh is attached to a skeleton.
       public: bool HasSkeleton() const;
 
       /// \brief Scale all vertices by _factor
-      /// \param _factor Scaling factor
+      /// \param[in] _factor Scaling factor
       public: void Scale(const ignition::math::Vector3d &_factor);
+
+      /// \brief Scale all vertices by _factor
+      /// \param[in] _factor Scaling factor
+      public: void Scale(const double &_factor);
 
       /// \brief Set the scale all vertices
       /// \param[in] _factor Scaling vector

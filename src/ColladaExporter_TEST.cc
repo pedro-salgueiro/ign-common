@@ -60,7 +60,7 @@ TEST_F(ColladaExporter, ExportBox)
                                ->FirstChildElement("float_array")
                                ->Attribute("count");
   unsigned int countMeshInt =
-    meshOriginal->SubMeshByIndex(0).lock()->VertexCount()*3;
+    meshOriginal->SubMeshByIndex(0)->VertexCount()*3;
   char countMesh[100];
   snprintf(countMesh, sizeof(countMesh), "%u", countMeshInt);
 
@@ -84,18 +84,18 @@ TEST_F(ColladaExporter, ExportBox)
   {
     for (unsigned int j = 0; j < meshOriginal->VertexCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->Vertex(j),
-                meshReloaded->SubMeshByIndex(i).lock()->Vertex(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->Vertex(j),
+                meshReloaded->SubMeshByIndex(i)->Vertex(j));
     }
     for (unsigned int j = 0; j < meshOriginal->NormalCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->Normal(j),
-                meshReloaded->SubMeshByIndex(i).lock()->Normal(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->Normal(j),
+                meshReloaded->SubMeshByIndex(i)->Normal(j));
     }
     for (unsigned int j = 0; j < meshOriginal->TexCoordCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->TexCoord(j),
-                meshReloaded->SubMeshByIndex(i).lock()->TexCoord(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->TexCoord(j),
+                meshReloaded->SubMeshByIndex(i)->TexCoord(j));
     }
   }
 
@@ -136,7 +136,7 @@ TEST_F(ColladaExporter, ExportCordlessDrill)
   for (unsigned int i = 0; i < meshOriginal->SubMeshCount(); ++i)
   {
     unsigned int countMeshInt =
-      meshOriginal->SubMeshByIndex(i).lock()->VertexCount()*3;
+      meshOriginal->SubMeshByIndex(i)->VertexCount()*3;
     char countMesh[100];
     snprintf(countMesh, sizeof(countMesh), "%u", countMeshInt);
 
@@ -170,18 +170,18 @@ TEST_F(ColladaExporter, ExportCordlessDrill)
   {
     for (unsigned int j = 0; j < meshOriginal->VertexCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->Vertex(j),
-          meshReloaded->SubMeshByIndex(i).lock()->Vertex(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->Vertex(j),
+          meshReloaded->SubMeshByIndex(i)->Vertex(j));
     }
     for (unsigned int j = 0; j < meshOriginal->NormalCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->Normal(j),
-          meshReloaded->SubMeshByIndex(i).lock()->Normal(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->Normal(j),
+          meshReloaded->SubMeshByIndex(i)->Normal(j));
     }
     for (unsigned int j = 0; j < meshOriginal->TexCoordCount(); ++j)
     {
-      EXPECT_EQ(meshOriginal->SubMeshByIndex(i).lock()->TexCoord(j),
-                meshReloaded->SubMeshByIndex(i).lock()->TexCoord(j));
+      EXPECT_EQ(meshOriginal->SubMeshByIndex(i)->TexCoord(j),
+                meshReloaded->SubMeshByIndex(i)->TexCoord(j));
     }
   }
 

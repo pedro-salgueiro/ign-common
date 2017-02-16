@@ -80,8 +80,8 @@ namespace ignition
       public: std::map<std::string,
               std::vector<ignition::math::Vector2d> >texcoordIds;
 
-      /// \brief Map of collada Material ids to Gazebo materials.
-      public: std::map<std::string, MaterialPtr> materialIds;
+      /// \brief Set of collada materials.
+      public: std::set<std::string> materialIds;
 
       /// \brief Map of collada POSITION ids to a map of
       /// duplicate positions.
@@ -112,13 +112,13 @@ namespace ignition
       /// \param[in] _xml Animation XML instance
       /// \param[in,out] _skel Pointer to the skeleton
       public: void LoadAnimations(tinyxml2::XMLElement *_xml,
-                                   SkeletonPtr _skel);
+                                  SkeletonPtr _skel);
 
       /// \brief Load a set of animations for a skeleton
       /// \param[in] _xml Pointer to the animation set XML instance
       /// \param[in,out] _skel Pointer to the skeleton
       public: void LoadAnimationSet(tinyxml2::XMLElement *_xml,
-                                     SkeletonPtr _skel);
+                                    SkeletonPtr _skel);
 
       /// \brief Load skeleton nodes
       /// \param[in] _xml Pointer to the XML instance
@@ -130,7 +130,7 @@ namespace ignition
       /// \param[in] _elem Pointer to the XML instance
       /// \param[in,out] _node The skeleton node
       public: void SetSkeletonNodeTransform(tinyxml2::XMLElement *_elem,
-                                             SkeletonNode *_node);
+                                            SkeletonNode *_node);
 
       /// \brief Load geometry elements
       /// \param[in] _xml Pointer to the XML instance
@@ -225,7 +225,7 @@ namespace ignition
       /// \brief Load a material
       /// \param _name Name of the material XML element
       /// \return A pointer to the new material
-      public: MaterialPtr LoadMaterial(const std::string &_name);
+      public: Material *LoadMaterial(const std::string &_name);
 
       /// \brief Load a color or texture
       /// \param[in] _elem Pointer to the XML element
@@ -233,7 +233,7 @@ namespace ignition
       /// \param[out] _mat Material to load the texture or color into
       public: void LoadColorOrTexture(tinyxml2::XMLElement *_elem,
                                        const std::string &_type,
-                                       MaterialPtr _mat);
+                                       Material *_mat);
 
       /// \brief Load triangles
       /// \param[in] _trianglesXml Pointer the triangles XML instance
@@ -272,7 +272,7 @@ namespace ignition
       /// \param[in] _elem Pointer to the XML element
       /// \param[out] _mat Material to hold the transparent properties
       public: void LoadTransparent(tinyxml2::XMLElement *_elem,
-                                    MaterialPtr _mat);
+                                   Material *_mat);
     };
 
     /// \brief Helper data structure for loading collada geometries.
@@ -391,8 +391,7 @@ Mesh *ColladaLoader::Load(const std::string &_filename)
   this->dataPtr->LoadScene(mesh);
 
   // This will make the model the correct size.
-  mesh->Scale(ignition::math::Vector3d(
-      this->dataPtr->meter, this->dataPtr->meter, this->dataPtr->meter));
+  mesh->Scale(this->dataPtr->meter);
 
   return mesh;
 }
@@ -497,6 +496,14 @@ void ColladaLoaderPrivate::LoadNode(tinyxml2::XMLElement *_elem, Mesh *_mesh,
 
     tinyxml2::XMLElement *instSkelXml =
         instContrXml->FirstChildElement("skeleton");
+    if (!instSkelXml)
+    {
+      ignwarn << "<instance_controller> without a <skeleton> cannot be parsed"
+          << std::endl;
+      instContrXml = instContrXml->NextSiblingElement("instance_controller");
+      continue;
+    }
+
     std::string rootURL = instSkelXml->GetText();
     tinyxml2::XMLElement *rootNodeXml = this->ElementId("node", rootURL);
 
@@ -595,14 +602,16 @@ void ColladaLoaderPrivate::LoadController(tinyxml2::XMLElement *_contrXml,
     tinyxml2::XMLElement *_skelXml, const ignition::math::Matrix4d &_transform,
     Mesh *_mesh)
 {
-  SkeletonPtr skeleton(new Skeleton(this->LoadSkeletonNodes(_skelXml, NULL)));
-  _mesh->SetSkeleton(skeleton);
+  SkeletonPtr skeleton = _mesh->MeshSkeleton();
+  skeleton->RootNode(this->LoadSkeletonNodes(_skelXml, nullptr));
 
   tinyxml2::XMLElement *rootXml = _contrXml->GetDocument()->RootElement();
 
   if (rootXml->FirstChildElement("library_animations"))
+  {
     this->LoadAnimations(rootXml->FirstChildElement("library_animations"),
         skeleton);
+  }
 
   tinyxml2::XMLElement *skinXml = _contrXml->FirstChildElement("skin");
   std::string geomURL = skinXml->Attribute("source");
@@ -745,7 +754,7 @@ void ColladaLoaderPrivate::LoadController(tinyxml2::XMLElement *_contrXml,
     for (unsigned int j = 0; j < vCount[i]; ++j)
     {
       skeleton->AddVertNodeWeight(i, joints[v[vIndex + jOffset]],
-                                    weights[v[vIndex + wOffset]]);
+          weights[v[vIndex + wOffset]]);
       vIndex += (jOffset + wOffset + 1);
     }
   }
@@ -838,8 +847,8 @@ void ColladaLoaderPrivate::LoadAnimationSet(tinyxml2::XMLElement *_xml,
         }
       }
 
-      tinyxml2::XMLElement *frameTimesXml = NULL;
-      tinyxml2::XMLElement *frameTransXml = NULL;
+      tinyxml2::XMLElement *frameTimesXml = nullptr;
+      tinyxml2::XMLElement *frameTransXml = nullptr;
 
       tinyxml2::XMLElement *sampXml = this->ElementId("sampler", sourceURL);
       tinyxml2::XMLElement *inputXml = sampXml->FirstChildElement("input");
@@ -885,8 +894,10 @@ void ColladaLoaderPrivate::LoadAnimationSet(tinyxml2::XMLElement *_xml,
       for (unsigned int i = 0; i < times.size(); ++i)
       {
         if (animation[targetBone].find(times[i]) == animation[targetBone].end())
+        {
           animation[targetBone][times[i]] =
-                      _skel->NodeById(targetBone)->Transforms();
+            _skel->NodeById(targetBone)->Transforms();
+        }
 
         std::vector<NodeTransform> *frame = &animation[targetBone][times[i]];
 
@@ -944,10 +955,13 @@ SkeletonNode *ColladaLoaderPrivate::LoadSkeletonNodes(
   else
     name = _xml->Attribute("name");
 
-  SkeletonNode* node = new SkeletonNode(_parent, name, _xml->Attribute("id"));
+  SkeletonNode *node = new SkeletonNode(_parent, name, _xml->Attribute("id"));
 
-  if (std::string(_xml->Attribute("type")) == std::string("NODE"))
+  if (_xml->Attribute("type") &&
+      std::string(_xml->Attribute("type")) == std::string("NODE"))
+  {
     node->SetType(SkeletonNode::NODE);
+  }
 
   this->SetSkeletonNodeTransform(_xml, node);
 
@@ -1121,7 +1135,7 @@ tinyxml2::XMLElement *ColladaLoaderPrivate::ElementId(
     elem = elem->NextSiblingElement();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -1482,19 +1496,18 @@ void ColladaLoaderPrivate::LoadTexCoords(const std::string &_id,
 }
 
 /////////////////////////////////////////////////
-MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
+Material *ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
 {
-  if (this->materialIds.find(_name)
-      != this->materialIds.end())
+  if (this->materialIds.find(_name) != this->materialIds.end())
   {
-    return this->materialIds[_name];
+    return nullptr;
   }
 
   tinyxml2::XMLElement *matXml = this->ElementId("material", _name);
   if (!matXml || !matXml->FirstChildElement("instance_effect"))
-    return NULL;
+    return nullptr;
 
-  MaterialPtr mat(new Material());
+  Material *mat = new Material();
   std::string effectName =
     matXml->FirstChildElement("instance_effect")->Attribute("url");
   tinyxml2::XMLElement *effectXml = this->ElementId("effect", effectName);
@@ -1515,6 +1528,7 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
       this->LoadColorOrTexture(lambertXml, "ambient", mat);
       this->LoadColorOrTexture(lambertXml, "emission", mat);
       this->LoadColorOrTexture(lambertXml, "diffuse", mat);
+      // order matters: transparency needs to be loaded before transparent.
       if (lambertXml->FirstChildElement("transparency"))
       {
         mat->SetTransparency(
@@ -1527,6 +1541,11 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
             lambertXml->FirstChildElement("transparent");
         this->LoadTransparent(transXml, mat);
       }
+      else
+      {
+        // no <transparent> tag, revert to zero transparency
+        mat->SetTransparency(0.0);
+      }
     }
     else if (phongXml)
     {
@@ -1538,6 +1557,7 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
         mat->SetShininess(
             this->LoadFloat(phongXml->FirstChildElement("shininess")));
 
+      // order matters: transparency needs to be loaded before transparent
       if (phongXml->FirstChildElement("transparency"))
         mat->SetTransparency(
             this->LoadFloat(phongXml->FirstChildElement("transparency")));
@@ -1546,6 +1566,11 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
         tinyxml2::XMLElement *transXml =
             phongXml->FirstChildElement("transparent");
         this->LoadTransparent(transXml, mat);
+      }
+      else
+      {
+        // no <transparent> tag, revert to zero transparency
+        mat->SetTransparency(0.0);
       }
     }
     else if (blinnXml)
@@ -1558,6 +1583,7 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
         mat->SetShininess(
             this->LoadFloat(blinnXml->FirstChildElement("shininess")));
 
+      // order matters: transparency needs to be loaded before transparent
       if (blinnXml->FirstChildElement("transparency"))
         mat->SetTransparency(
             this->LoadFloat(blinnXml->FirstChildElement("transparency")));
@@ -1566,6 +1592,11 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
         tinyxml2::XMLElement *transXml =
             blinnXml->FirstChildElement("transparent");
         this->LoadTransparent(transXml, mat);
+      }
+      else
+      {
+        // no <transparent> tag, revert to zero transparency
+        mat->SetTransparency(0.0);
       }
     }
   }
@@ -1578,14 +1609,14 @@ MaterialPtr ColladaLoaderPrivate::LoadMaterial(const std::string &_name)
   if (cgXml)
     ignerr << "profile_CG unsupported\n";
 
-  this->materialIds[_name] = mat;
+  this->materialIds.insert(_name);
 
   return mat;
 }
 
 /////////////////////////////////////////////////
 void ColladaLoaderPrivate::LoadColorOrTexture(tinyxml2::XMLElement *_elem,
-    const std::string &_type, MaterialPtr _mat)
+    const std::string &_type, Material *_mat)
 {
   if (!_elem || !_elem->FirstChildElement(_type.c_str()))
     return;
@@ -1610,7 +1641,7 @@ void ColladaLoaderPrivate::LoadColorOrTexture(tinyxml2::XMLElement *_elem,
   else if (typeElem->FirstChildElement("texture"))
   {
     _mat->SetLighting(true);
-    tinyxml2::XMLElement *imageXml = NULL;
+    tinyxml2::XMLElement *imageXml = nullptr;
     std::string textureName =
       typeElem->FirstChildElement("texture")->Attribute("texture");
     tinyxml2::XMLElement *textureXml = this->ElementId("newparam", textureName);
@@ -1666,8 +1697,7 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
   // a set of triangle meshes.  The assumption is that
   // each polylist polygon is convex, and we do decomposion
   // by anchoring each triangle about vertex 0 or each polygon
-  std::unique_ptr<SubMesh> subMesh(new SubMesh);
-  subMesh->SetName(this->currentNodeName);
+  SubMeshPtr subMesh = _mesh->AddSubMesh(this->currentNodeName);
   bool combinedVertNorms = false;
 
   subMesh->SetPrimitiveType(SubMesh::TRIANGLES);
@@ -1682,11 +1712,9 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
     if (iter != this->materialMap.end())
       matStr = iter->second;
 
-    MaterialPtr mat = this->LoadMaterial(matStr);
-
-    matIndex = _mesh->IndexOfMaterial(mat.get());
-    if (matIndex < 0)
-      matIndex = _mesh->AddMaterial(mat);
+    std::unique_ptr<Material> mat(this->LoadMaterial(matStr));
+    if (mat)
+      matIndex = _mesh->AddMaterial(mat.get());
 
     if (matIndex < 0)
       ignwarn << "Unable to add material[" << matStr << "]\n";
@@ -1860,6 +1888,10 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
 
               if (!inputs[TEXCOORD].empty())
               {
+                // \todo: Add support for multiple texture maps to SubMesh.
+                // Here we are only using the first texture coordinates, when
+                // multiple could have been specified. See Gazebo issue #532.
+
                 // Get the vertex texcoord index value. If the texcoord is a
                 // duplicate then reset the index to the first instance of the
                 // duplicated texcoord
@@ -1907,18 +1939,18 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
               for (unsigned int i = 0;
                   i < skel->VertNodeWeightCount(daeVertIndex); ++i)
               {
-                std::pair<std::string, double> node_weight =
+                std::pair<std::string, double> nodeWeight =
                   skel->VertNodeWeight(daeVertIndex, i);
                 SkeletonNode *node =
-                    _mesh->MeshSkeleton()->NodeByName(node_weight.first);
+                    _mesh->MeshSkeleton()->NodeByName(nodeWeight.first);
                 subMesh->AddNodeAssignment(subMesh->VertexCount()-1,
-                                node->Handle(), node_weight.second);
+                                node->Handle(), nodeWeight.second);
               }
             }
             input.vertexIndex = daeVertIndex;
             input.mappedIndex = newVertIndex;
           }
-          if (!inputs[VERTEX].empty())
+          if (!inputs[NORMAL].empty())
           {
             unsigned int inputRemappedNormalIndex =
               values[*inputs[NORMAL].begin()];
@@ -1935,6 +1967,9 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
 
           if (!inputs[TEXCOORD].empty())
           {
+            // \todo: Add support for multiple texture maps to SubMesh.
+            // Here we are only using the first texture coordinates, when
+            // multiple could have been specified.
             unsigned int inputRemappedTexcoordIndex =
               values[*inputs[TEXCOORD].begin()];
 
@@ -1960,16 +1995,13 @@ void ColladaLoaderPrivate::LoadPolylist(tinyxml2::XMLElement *_polylistXml,
     }
   }
   delete [] values;
-
-  _mesh->AddSubMesh(std::move(subMesh));
 }
 
 /////////////////////////////////////////////////
 void ColladaLoaderPrivate::LoadTriangles(tinyxml2::XMLElement *_trianglesXml,
     const ignition::math::Matrix4d &_transform, Mesh *_mesh)
 {
-  std::unique_ptr<SubMesh> subMesh(new SubMesh);
-  subMesh->SetName(this->currentNodeName);
+  SubMeshPtr subMesh = _mesh->AddSubMesh(this->currentNodeName);
   bool combinedVertNorms = false;
 
   subMesh->SetPrimitiveType(SubMesh::TRIANGLES);
@@ -1984,10 +2016,9 @@ void ColladaLoaderPrivate::LoadTriangles(tinyxml2::XMLElement *_trianglesXml,
     if (iter != this->materialMap.end())
       matStr = iter->second;
 
-    MaterialPtr mat = this->LoadMaterial(matStr);
-    matIndex = _mesh->IndexOfMaterial(mat.get());
-    if (matIndex < 0)
-      matIndex = _mesh->AddMaterial(mat);
+    std::unique_ptr<Material> mat(this->LoadMaterial(matStr));
+    if (mat)
+      matIndex = _mesh->AddMaterial(mat.get());
 
     if (matIndex < 0)
       ignwarn << "Unable to add material[" << matStr << "]\n";
@@ -2196,12 +2227,12 @@ void ColladaLoaderPrivate::LoadTriangles(tinyxml2::XMLElement *_trianglesXml,
           for (unsigned int i = 0;
               i < skel->VertNodeWeightCount(values[daeVertIndex]); ++i)
           {
-            std::pair<std::string, double> node_weight =
+            std::pair<std::string, double> nodeWeight =
               skel->VertNodeWeight(values[daeVertIndex], i);
             SkeletonNode *node =
-                _mesh->MeshSkeleton()->NodeByName(node_weight.first);
+                _mesh->MeshSkeleton()->NodeByName(nodeWeight.first);
             subMesh->AddNodeAssignment(subMesh->VertexCount()-1,
-                            node->Handle(), node_weight.second);
+                            node->Handle(), nodeWeight.second);
           }
         }
         input.vertexIndex = daeVertIndex;
@@ -2236,15 +2267,13 @@ void ColladaLoaderPrivate::LoadTriangles(tinyxml2::XMLElement *_trianglesXml,
   }
 
   delete [] values;
-  _mesh->AddSubMesh(std::move(subMesh));
 }
 
 /////////////////////////////////////////////////
 void ColladaLoaderPrivate::LoadLines(tinyxml2::XMLElement *_xml,
     const ignition::math::Matrix4d &_transform, Mesh *_mesh)
 {
-  std::unique_ptr<SubMesh> subMesh(new SubMesh);
-  subMesh->SetName(this->currentNodeName);
+  SubMeshPtr subMesh = _mesh->AddSubMesh(this->currentNodeName);
   subMesh->SetPrimitiveType(SubMesh::LINES);
 
   tinyxml2::XMLElement *inputXml = _xml->FirstChildElement("input");
@@ -2271,8 +2300,6 @@ void ColladaLoaderPrivate::LoadLines(tinyxml2::XMLElement *_xml,
     subMesh->AddVertex(verts[b]);
     subMesh->AddIndex(subMesh->VertexCount() - 1);
   } while (iss);
-
-  _mesh->AddSubMesh(std::move(subMesh));
 }
 
 /////////////////////////////////////////////////
@@ -2291,12 +2318,13 @@ float ColladaLoaderPrivate::LoadFloat(tinyxml2::XMLElement *_elem)
 
 /////////////////////////////////////////////////
 void ColladaLoaderPrivate::LoadTransparent(tinyxml2::XMLElement *_elem,
-    MaterialPtr _mat)
+    Material *_mat)
 {
   const char *opaqueCStr = _elem->Attribute("opaque");
   if (!opaqueCStr)
   {
-    // ignerr << "No Opaque set\n";
+    // no opaque mode, revert transparency to 0.0
+    _mat->SetTransparency(0.0);
     return;
   }
 
@@ -2319,19 +2347,62 @@ void ColladaLoaderPrivate::LoadTransparent(tinyxml2::XMLElement *_elem,
     std::istringstream stream(colorStr);
     stream >> color;
 
+    // src is the texel value and dst is the existing pixel value
     double srcFactor = 0;
     double dstFactor = 0;
 
+    // Calculate alpha based on opaque mode.
+    // Equations are extracted from collada spec
+    // Make sure to update the final transparency value
+    // final mat transparency = 1 - srcFactor = dstFactor
     if (opaqueStr == "RGB_ZERO")
     {
-      // FIXME: should all channels be modulated independently?
-      srcFactor = color.R() * _mat->Transparency();
-      dstFactor = 1.0 - color.R() * _mat->Transparency();
+      // Lunimance based on ISO/CIE color standards ITU-R BT.709-4
+      float luminance = 0.212671 * color.R() +
+                        0.715160 * color.G() +
+                        0.072169 * color.B();
+      // result.a = fb.a * (lumiance(transparent.rgb) * transparency) + mat.a *
+      // (1.0f - luminance(transparent.rgb) * transparency)
+      // where fb corresponds to the framebuffer (existing pixel) and
+      // mat corresponds to material before transparency (texel)
+      dstFactor = luminance * _mat->Transparency();
+      srcFactor = 1.0 - luminance * _mat->Transparency();
+      _mat->SetTransparency(dstFactor);
+    }
+    else if (opaqueStr == "RGB_ONE")
+    {
+      // Lunimance based on ISO/CIE color standards ITU-R BT.709-4
+      float luminance = 0.212671 * color.R() +
+                        0.715160 * color.G() +
+                        0.072169 * color.B();
+
+      // result.a = fb.a * (1.0f - lumiance(transparent.rgb) * transparency) +
+      // mat.a * (luminance(transparent.rgb) * transparency)
+      // where fb corresponds to the framebuffer (existing pixel) and
+      // mat corresponds to material before transparency (texel)
+      dstFactor = 1.0 - luminance * _mat->Transparency();
+      srcFactor = luminance * _mat->Transparency();
+      _mat->SetTransparency(dstFactor);
     }
     else if (opaqueStr == "A_ONE")
     {
-      srcFactor = 1.0 - color.A() * _mat->Transparency();
+      // result.a = fb.a * (1.0f - transparent.a * transparency) + mat.a *
+      // (transparent.a * transparency)
+      // where fb corresponds to the framebuffer (existing pixel) and
+      // mat corresponds to material before transparency (texel)
+      dstFactor = 1.0 - color.A() * _mat->Transparency();
+      srcFactor = color.A() * _mat->Transparency();
+      _mat->SetTransparency(dstFactor);
+    }
+    else if (opaqueStr == "A_ZERO")
+    {
+      // result.a = fb.a * (transparent.a * transparency) + mat.a *
+      // (1.0f - transparent.a * transparency)
+      // where fb corresponds to the framebuffer (existing pixel) and
+      // mat corresponds to material before transparency (texel)
       dstFactor = color.A() * _mat->Transparency();
+      srcFactor = 1.0 - color.A() * _mat->Transparency();
+      _mat->SetTransparency(dstFactor);
     }
 
     _mat->SetBlendFactors(srcFactor, dstFactor);

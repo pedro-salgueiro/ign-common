@@ -56,9 +56,10 @@ class ignition::common::SubMeshPrivate
 };
 
 //////////////////////////////////////////////////
-SubMesh::SubMesh()
+SubMesh::SubMesh(const std::string &_name)
 : dataPtr(new SubMeshPrivate)
 {
+  this->dataPtr->name = _name;
   this->dataPtr->materialIndex = -1;
   this->dataPtr->primitiveType = TRIANGLES;
 }
@@ -499,6 +500,13 @@ void SubMesh::Scale(const ignition::math::Vector3d &_factor)
 }
 
 //////////////////////////////////////////////////
+void SubMesh::Scale(const double &_factor)
+{
+  for (auto &v : this->dataPtr->vertices)
+    v *= _factor;
+}
+
+//////////////////////////////////////////////////
 void SubMesh::SetScale(const ignition::math::Vector3d &_factor)
 {
   for (auto &v : this->dataPtr->vertices)
@@ -535,8 +543,63 @@ std::string SubMesh::Name() const
   return this->dataPtr->name;
 }
 
+/*//////////////////////////////////////////////////
+bool SubMesh::operator==(const SubMesh &_sub) const
+{
+  // Short circuit on null check
+  if (this->dataPtr->name == SubMesh::Null.Name() &&
+      this->dataPtr->name == _sub.dataPtr->name)
+  {
+    return true;
+  }
+
+  // Perform a easy checks before comparing vectors.
+  if (this->dataPtr->primitiveType != _sub.dataPtr->primitiveType ||
+      this->dataPtr->name != _sub.dataPtr->name ||
+      this->dataPtr->materialIndex != _sub.dataPtr->materialIndex ||
+      this->dataPtr->vertices.size() != _sub.dataPtr->vertices.size() ||
+      this->dataPtr->normals.size() != _sub.dataPtr->normals.size() ||
+      this->dataPtr->texCoords.size() != _sub.dataPtr->texCoords.size() ||
+      this->dataPtr->indices.size() != _sub.dataPtr->indices.size() ||
+      this->dataPtr->nodeAssignments.size() !=
+      _sub.dataPtr->nodeAssignments.size())
+  {
+    return false;
+  }
+
+  return std::equal(this->dataPtr->vertices.begin(),
+                    this->dataPtr->vertices.end(),
+                    _sub.dataPtr->vertices.begin()) &&
+         std::equal(this->dataPtr->normals.begin(),
+                    this->dataPtr->normals.end(),
+                    _sub.dataPtr->normals.begin()) &&
+         std::equal(this->dataPtr->texCoords.begin(),
+                    this->dataPtr->texCoords.end(),
+                    _sub.dataPtr->texCoords.begin()) &&
+         std::equal(this->dataPtr->indices.begin(),
+                    this->dataPtr->indices.end(),
+                    _sub.dataPtr->indices.begin()) &&
+         std::equal(this->dataPtr->nodeAssignments.begin(),
+                    this->dataPtr->nodeAssignments.end(),
+                    _sub.dataPtr->nodeAssignments.begin());
+}
+
+//////////////////////////////////////////////////
+bool SubMesh::operator!=(const SubMesh &_node) const
+{
+  return !(*this == _node);
+}*/
+
 //////////////////////////////////////////////////
 NodeAssignment::NodeAssignment()
   : vertexIndex(0), nodeIndex(0), weight(0.0)
 {
+}
+
+//////////////////////////////////////////////////
+bool NodeAssignment::operator==(const NodeAssignment &_node) const
+{
+  return this->vertexIndex == _node.vertexIndex &&
+    this->nodeIndex == _node.nodeIndex &&
+    this->weight == _node.weight;
 }

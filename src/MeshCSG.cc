@@ -160,7 +160,13 @@ Mesh *MeshCSG::CreateBoolean(const Mesh *_m1, const Mesh *_m2, int _operation,
     {
       SubMesh m2SubMesh;
 
-      auto subMesh = _m2->SubMeshByIndex(i).lock();
+      auto subMesh = _m2->SubMeshByIndex(i);
+      if (subMesh == nullptr)
+      {
+        ignerr << "Invalid submesh with index[" << i << "]\n";
+        continue;
+      }
+
       if (subMesh->VertexCount() <= 2)
         continue;
       for (unsigned int j = 0; j < subMesh->VertexCount(); ++j)
@@ -284,7 +290,13 @@ void MeshCSG::ConvertMeshToGTS(const Mesh *_mesh, GtsSurface *_surface)
 
   for (unsigned int i = 0; i < _mesh->SubMeshCount(); ++i)
   {
-    auto subMesh = _mesh->SubMeshByIndex(i).lock();
+    auto subMesh = _mesh->SubMeshByIndex(i);
+    if (subMesh == nullptr)
+    {
+      ignerr << "Invalid submesh at index[" << i << "]\n";
+      continue;
+    }
+
     unsigned int indexCount = subMesh->IndexCount();
     if (subMesh->VertexCount() <= 2)
       continue;

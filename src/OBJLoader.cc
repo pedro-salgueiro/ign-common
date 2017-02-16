@@ -15,7 +15,9 @@
  *
  */
 
+#include <functional>
 #include <memory>
+#include <set>
 
 #include "ignition/common/Console.hh"
 #include "ignition/common/Material.hh"
@@ -55,7 +57,7 @@ OBJLoader::~OBJLoader()
 //////////////////////////////////////////////////
 Mesh *OBJLoader::Load(const std::string &_filename)
 {
-  std::map<std::string, Material *> materialIds;
+  std::set<std::string> materialIds;
 
   std::string path;
   size_t idx = _filename.rfind('/');
@@ -93,41 +95,41 @@ Mesh *OBJLoader::Load(const std::string &_filename)
     // single material to each 'submesh'. The strategy here is to identify
     // the number of unique material ids in each obj shape and create a new
     // submesh per unique material id
-    std::map<int, SubMesh *> subMeshMatId;
+    std::map<int, SubMeshPtr> subMeshMatId;
     for (auto const id :  s.mesh.material_ids)
     {
       if (subMeshMatId.find(id) == subMeshMatId.end())
       {
-        std::unique_ptr<SubMesh> subMesh(new SubMesh());
-        subMesh->SetName(s.name);
-        subMesh->SetPrimitiveType(SubMesh::TRIANGLES);
-        subMeshMatId[id] = subMesh.get();
+        SubMeshPtr subMesh = mesh->AddSubMesh(s.name);
 
-        Material *mat = nullptr;
+        subMesh->SetPrimitiveType(SubMesh::TRIANGLES);
+        subMeshMatId.insert(std::make_pair(id, subMesh));
+
         auto m = materials[id];
-        if (materialIds.find(m.name) != materialIds.end())
-        {
-          mat = materialIds[m.name];
-        }
-        else
+        int matIndex = -1;
+        if (materialIds.find(m.name) == materialIds.end())
         {
           // Create new material and pass it to mesh who will take ownership of
           // the object
-          mat = new Material();
-          mat->SetAmbient(Color(m.ambient[0], m.ambient[1], m.ambient[2]));
-          mat->SetDiffuse(Color(m.diffuse[0], m.diffuse[1], m.diffuse[2]));
-          mat->SetSpecular(Color(m.specular[0], m.specular[1], m.specular[2]));
-          mat->SetEmissive(Color(m.emission[0], m.emission[1], m.emission[2]));
-          mat->SetShininess(m.shininess);
-          mat->SetTransparency(1.0 - m.dissolve);
-          mat->SetTextureImage(m.diffuse_texname, path.c_str());
-          materialIds[m.name] = mat;
+          Material mat;
+          mat.SetAmbient(Color(m.ambient[0], m.ambient[1], m.ambient[2]));
+          mat.SetDiffuse(Color(m.diffuse[0], m.diffuse[1], m.diffuse[2]));
+          mat.SetSpecular(Color(m.specular[0], m.specular[1], m.specular[2]));
+          mat.SetEmissive(Color(m.emission[0], m.emission[1], m.emission[2]));
+          mat.SetShininess(m.shininess);
+          mat.SetTransparency(1.0 - m.dissolve);
+          mat.SetTextureImage(m.diffuse_texname, path.c_str());
+
+          materialIds.insert(m.name);
+          matIndex = mesh->AddMaterial(mat);
         }
-        int matIndex = mesh->IndexOfMaterial(mat);
-        if (matIndex < 0)
-          matIndex = mesh->AddMaterial(MaterialPtr(mat));
-        subMesh->SetMaterialIndex(matIndex);
-        mesh->AddSubMesh(std::move(subMesh));
+        else
+        {
+          matIndex = mesh->MaterialIndex(m.name);
+        }
+
+        if (matIndex >= 0)
+          subMesh->SetMaterialIndex(matIndex);
       }
     }
 
@@ -137,7 +139,7 @@ Mesh *OBJLoader::Load(const std::string &_filename)
     {
       // find the submesh that corresponds to the current face material
       unsigned int matId = s.mesh.material_ids[f];
-      SubMesh *subMesh = subMeshMatId[matId];
+      SubMeshPtr subMesh = subMeshMatId.find(matId)->second;
 
       unsigned int fnum = s.mesh.num_face_vertices[f];
       // For each vertex in the face

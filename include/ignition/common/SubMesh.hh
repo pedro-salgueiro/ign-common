@@ -60,7 +60,8 @@ namespace ignition
               };
 
       /// \brief Constructor
-      public: SubMesh();
+      /// \param _name Name of the submesh.
+      public: explicit SubMesh(const std::string &_name = "");
 
       /// \brief Copy Constructor
       /// \brief _other Other mesh object
@@ -246,6 +247,10 @@ namespace ignition
       /// \param[in] _factor Scaling factor
       public: void Scale(const ignition::math::Vector3d &_factor);
 
+      /// \brief Scale all vertices by _factor
+      /// \param[in] _factor Scaling factor
+      public: void Scale(const double &_factor);
+
       /// \brief Move the center of the submesh to the given coordinate. This
       /// will move all the vertices.
       /// \param[in] _center Location of the mesh center.
@@ -259,6 +264,16 @@ namespace ignition
       /// \brief Set the scale of all vertices by the _factor
       /// \param[in] _factor Scaling vector
       public: void SetScale(const ignition::math::Vector3d &_factor);
+
+      /// \brief Equality operator.
+      /// \param[in] _sub Submesh to compare against.
+      /// \return True if this object and _sub are equivalent.
+      // public: bool operator==(const SubMesh &_sub) const;
+
+      /// \brief Inequality operator.
+      /// \param[in] _sub Submesh to compare against.
+      /// \return True if this object and _sub are not equivalent.
+      // public: bool operator!=(const SubMesh &_sub) const;
 
 #ifdef _WIN32
 // Disable warning C4251 which is triggered by
@@ -280,6 +295,11 @@ namespace ignition
     {
       /// \brief Constructor.
       public: NodeAssignment();
+
+      /// \brief Equality operator.
+      /// \param[in] _node NodeAssignment to compare against.
+      /// \return True if this object and _node are equivalent.
+      public: bool operator==(const NodeAssignment &_node) const;
 
       /// \brief Index of the vertex
       public: unsigned int vertexIndex;

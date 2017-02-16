@@ -53,7 +53,6 @@ Mesh::Mesh()
 : dataPtr(new MeshPrivate)
 {
   this->dataPtr->name = "unknown";
-  this->dataPtr->skeleton = NULL;
 }
 
 //////////////////////////////////////////////////
@@ -176,18 +175,19 @@ unsigned int Mesh::TexCoordCount() const
   return sum;
 }
 
+
 //////////////////////////////////////////////////
-std::weak_ptr<SubMesh> Mesh::AddSubMesh(const SubMesh &_sub)
+SubMeshPtr Mesh::AddSubMesh(const std::string &_name)
 {
-  auto sub = std::shared_ptr<SubMesh>(new SubMesh(_sub));
+  SubMeshPtr sub(new SubMesh(_name));
   this->dataPtr->submeshes.push_back(sub);
   return sub;
 }
 
 //////////////////////////////////////////////////
-std::weak_ptr<SubMesh> Mesh::AddSubMesh(std::unique_ptr<SubMesh> _sub)
+SubMeshPtr Mesh::AddSubMesh(const SubMesh &_sub)
 {
-  auto sub = std::shared_ptr<SubMesh>(std::move(_sub));
+  SubMeshPtr sub(new SubMesh(_sub));
   this->dataPtr->submeshes.push_back(sub);
   return sub;
 }
@@ -199,7 +199,7 @@ unsigned int Mesh::SubMeshCount() const
 }
 
 //////////////////////////////////////////////////
-std::weak_ptr<SubMesh> Mesh::SubMeshByIndex(unsigned int _index) const
+SubMeshPtr Mesh::SubMeshByIndex(const unsigned int _index) const
 {
   if (_index < this->dataPtr->submeshes.size())
     return this->dataPtr->submeshes[_index];
@@ -207,11 +207,11 @@ std::weak_ptr<SubMesh> Mesh::SubMeshByIndex(unsigned int _index) const
   ignerr << "Invalid index: " << _index << " >= " <<
       this->dataPtr->submeshes.size() << std::endl;
 
-  return std::shared_ptr<SubMesh>(nullptr);
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
-std::weak_ptr<SubMesh> Mesh::SubMeshByName(const std::string &_name) const
+SubMeshPtr Mesh::SubMeshByName(const std::string &_name) const
 {
   // Find the submesh with the provided name.
   for (const auto &submesh : this->dataPtr->submeshes)
@@ -220,21 +220,27 @@ std::weak_ptr<SubMesh> Mesh::SubMeshByName(const std::string &_name) const
       return submesh;
   }
 
-  return std::shared_ptr<SubMesh>(nullptr);
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
-int Mesh::AddMaterial(const MaterialPtr &_mat)
+int Mesh::AddMaterial(const Material *_mat)
 {
   int result = -1;
 
   if (_mat)
   {
-    this->dataPtr->materials.push_back(_mat);
+    this->dataPtr->materials.push_back(MaterialPtr(new Material(*_mat)));
     result = this->dataPtr->materials.size()-1;
   }
 
   return result;
+}
+//////////////////////////////////////////////////
+int Mesh::AddMaterial(const Material &_mat)
+{
+  this->dataPtr->materials.push_back(MaterialPtr(new Material(_mat)));
+  return this->dataPtr->materials.size()-1;
 }
 
 //////////////////////////////////////////////////
@@ -244,27 +250,12 @@ unsigned int Mesh::MaterialCount() const
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Mesh::MaterialByIndex(const unsigned int index) const
+MaterialPtr Mesh::MaterialByIndex(unsigned int _index) const
 {
-  if (index < this->dataPtr->materials.size())
-    return this->dataPtr->materials[index];
+  if (_index < this->dataPtr->materials.size())
+    return this->dataPtr->materials[_index];
 
-  return NULL;
-}
-
-//////////////////////////////////////////////////
-int Mesh::IndexOfMaterial(const Material *_mat) const
-{
-  if (_mat)
-  {
-    for (unsigned int i = 0; i < this->dataPtr->materials.size(); ++i)
-    {
-      if (this->dataPtr->materials[i].get() == _mat)
-        return i;
-    }
-  }
-
-  return -1;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -322,25 +313,29 @@ void Mesh::RecalculateNormals()
 }
 
 //////////////////////////////////////////////////
-void Mesh::SetSkeleton(const SkeletonPtr &_skel)
-{
-  this->dataPtr->skeleton = _skel;
-}
-
-//////////////////////////////////////////////////
 SkeletonPtr Mesh::MeshSkeleton() const
 {
+  if (!this->dataPtr->skeleton)
+    this->dataPtr->skeleton.reset(new Skeleton);
+
   return this->dataPtr->skeleton;
 }
 
 //////////////////////////////////////////////////
 bool Mesh::HasSkeleton() const
 {
-  return this->dataPtr->skeleton != NULL;
+  return this->dataPtr->skeleton != nullptr;
 }
 
 //////////////////////////////////////////////////
 void Mesh::Scale(const ignition::math::Vector3d &_factor)
+{
+  for (auto &submesh : this->dataPtr->submeshes)
+    submesh->Scale(_factor);
+}
+
+//////////////////////////////////////////////////
+void Mesh::Scale(const double &_factor)
 {
   for (auto &submesh : this->dataPtr->submeshes)
     submesh->Scale(_factor);
@@ -409,4 +404,18 @@ void Mesh::AABB(ignition::math::Vector3d &_center,
   _center.X(0.5 * (_minXYZ.X() + _maxXYZ.X()));
   _center.Y(0.5 * (_minXYZ.Y() + _maxXYZ.Y()));
   _center.Z(0.5 * (_minXYZ.Z() + _maxXYZ.Z()));
+}
+
+/////////////////////////////////////////////////
+int Mesh::MaterialIndex(const std::string &_name) const
+{
+  for (int i = 0; i < this->dataPtr->materials.size(); ++i)
+  {
+    if (this->dataPtr->materials[i]->Name() == _name)
+    {
+      return i;
+    }
+  }
+
+  return -1;
 }
