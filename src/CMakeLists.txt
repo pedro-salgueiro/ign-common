@@ -4,6 +4,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 
 set (sources
   Animation.cc
+  AssetDatabaseClient.cc
   AudioDecoder.cc
   Base64.cc
   Battery.cc
@@ -29,6 +30,7 @@ set (sources
   NodeAnimation.cc
   NodeTransform.cc
   OBJLoader.cc
+  ParserINI.cc
   PluginLoader.cc
   SemanticVersion.cc
   Skeleton.cc
@@ -54,6 +56,7 @@ endif()
 
 set (gtest_sources
   Animation_TEST.cc
+  AssetDatabaseClient_TEST.cc
   #AudioDecoder_TEST.cc
   Base64_TEST.cc
   Battery_TEST.cc
@@ -74,6 +77,7 @@ set (gtest_sources
   MouseEvent_TEST.cc
   MovingWindowFilter_TEST.cc
   OBJLoader_TEST.cc
+  ParserINI_TEST.cc
   PluginLoader_TEST.cc
   SemanticVersion_TEST.cc
   StringUtils_TEST.cc
@@ -99,6 +103,8 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   ${libavutil_LIBRARIES}
   ${libavdevice_LIBRARIES}
   ${libswscale_LIBRARIES}
+  ${CURL_LIBRARIES}
+  ${JSONCPP_LIBRARIES}
   )
 
 if (UNIX AND NOT APPLE)
@@ -120,9 +126,9 @@ if (UNIX AND NOT APPLE)
   endif()
 endif()
 
-# When the minimum CMake required version will be >= 3.1 
-# we could use the target_compile_features() command 
-# to enable C++11 support in a platform-independent way. 
+# When the minimum CMake required version will be >= 3.1
+# we could use the target_compile_features() command
+# to enable C++11 support in a platform-independent way.
 if(NOT MSVC)
   target_compile_options(${PROJECT_LIBRARY_TARGET_NAME} PUBLIC "-std=c++11")
 endif()

@@ -2,6 +2,7 @@ include (${project_cmake_dir}/Utils.cmake)
 
 set (headers
   Animation.hh
+  AssetDatabaseClient.hh
   AudioDecoder.hh
   Base64.hh
   Battery.hh
@@ -31,6 +32,7 @@ set (headers
   NodeAnimation.hh
   NodeTransform.hh
   OBJLoader.hh
+  ParserINI.hh
   PluginInfo.hh
   PluginLoader.hh
   PluginMacros.hh
