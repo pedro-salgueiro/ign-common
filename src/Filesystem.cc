@@ -61,10 +61,8 @@
 # define IGN_PATH_MAX _POSIX_PATH_MAX
 #endif
 
-namespace igncmn = ignition::common;
 using namespace ignition;
-using namespace igncmn;
-
+using namespace common;
 
 /////////////////////////////////////////////////
 bool ignition::common::isFile(const std::string &_path)
