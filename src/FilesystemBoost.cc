@@ -51,6 +51,10 @@
 #else
 #include <windows.h>
 #include <winnt.h>
+
+#ifndef FSCTL_GET_REPARSE_POINT
+#include <winioctl.h>
+
 #endif
 
 #include "ignition/common/Filesystem.hh"
