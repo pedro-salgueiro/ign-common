@@ -54,6 +54,7 @@
 
 #ifndef FSCTL_GET_REPARSE_POINT
 #include <winioctl.h>
+#endif
 
 #endif
 
