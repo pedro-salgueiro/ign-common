@@ -165,7 +165,7 @@ std::string SystemPaths::FindSharedLibrary(const std::string &_libName)
 }
 
 /////////////////////////////////////////////////
-std::string SystemPaths::NormalizePath(const std::string &_path)
+std::string SystemPaths::NormalizeDirectoryPath(const std::string &_path)
 {
   std::string path = _path;
   // Use '/' because it works on Linux, OSX, and Windows
@@ -313,7 +313,7 @@ std::string SystemPaths::LocateLocalFile(const std::string &_filename,
   std::string foundPath = "";
   for (auto const &path : _paths)
   {
-    std::string checkPath = NormalizePath(path) + _filename;
+    std::string checkPath = NormalizeDirectoryPath(path) + _filename;
     if (exists(checkPath))
     {
       foundPath = checkPath;
@@ -342,7 +342,7 @@ void SystemPaths::AddPluginPaths(const std::string &_path)
     std::vector<std::string> paths = Split(_path, delim);
     for (auto const &path : paths)
     {
-      std::string normalPath = NormalizePath(path);
+      std::string normalPath = NormalizeDirectoryPath(path);
       insertUnique(normalPath, this->dataPtr->pluginPaths);
     }
   }
@@ -402,7 +402,7 @@ std::list<std::string> SystemPaths::PathsFromEnv(const std::string &_env)
   auto ps = ignition::common::Split(envPathsStr, delim);
   for (auto const &path : ps)
   {
-    std::string normalPath = NormalizePath(path);
+    std::string normalPath = NormalizeDirectoryPath(path);
     insertUnique(normalPath, paths);
   }
 

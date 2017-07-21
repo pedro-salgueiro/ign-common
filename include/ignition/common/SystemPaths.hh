@@ -126,10 +126,11 @@ namespace ignition
       public: void SetFindFileURICallback(
                   std::function<std::string (const std::string &)> _cb);
 
-      /// \brief Format the path to use "/" as a separator with "/" at the end.
+      /// \brief Format the directory path to use "/" as a separator with "/"
+      /// at the end.
       /// \param[in] _path Path to normalize
       /// \return Normalized path
-      public: static std::string NormalizePath(const std::string &_path);
+      public: static std::string NormalizeDirectoryPath(const std::string &_path);
 
       /// \brief Return all paths given by an environment variable.
       /// \param[in] _env Environment variable.

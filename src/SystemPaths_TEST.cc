@@ -139,16 +139,20 @@ TEST_F(SystemPathsFixture, findFile)
 }
 
 //////////////////////////////////////////////////
-TEST_F(SystemPathsFixture, NormalizePath)
+TEST_F(SystemPathsFixture, NormalizeDirectoryPath)
 {
-  EXPECT_EQ(ignition::common::SystemPaths::NormalizePath("a/b/c/"), "a/b/c/");
-  EXPECT_EQ(ignition::common::SystemPaths::NormalizePath("a/b/c"), "a/b/c/");
-  EXPECT_EQ(ignition::common::SystemPaths::NormalizePath("/a/b/c/"), "/a/b/c/");
-  EXPECT_EQ(ignition::common::SystemPaths::NormalizePath("/a/b/c"), "/a/b/c/");
-  EXPECT_EQ(
-      ignition::common::SystemPaths::NormalizePath("a\\b\\c"), "a/b/c/");
-  EXPECT_EQ(
-      ignition::common::SystemPaths::NormalizePath("a\\b\\c\\"), "a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("a/b/c/"),
+                                                                  "a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("a/b/c"),
+                                                                  "a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("/a/b/c/"),
+                                                                  "/a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("/a/b/c"),
+                                                                  "/a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("a\\b\\c"),
+                                                                  "a/b/c/");
+  EXPECT_EQ(ignition::common::SystemPaths::NormalizeDirectoryPath("a\\b\\c\\"),
+                                                                  "a/b/c/");
 }
 
 //////////////////////////////////////////////////
