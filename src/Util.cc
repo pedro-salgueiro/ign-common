@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #ifdef __linux__
 #include <sys/sendfile.h>
@@ -32,7 +33,6 @@
 #include <cctype>
 
 #include <ignition/common/config.hh>
-#include <ignition/common/SystemPaths.hh>
 #include <ignition/common/Util.hh>
 #include <ignition/common/Uuid.hh>
 #include <ignition/common/Console.hh>
@@ -109,9 +109,6 @@ void logCallback(void *_ptr, int _level, const char *_fmt, va_list _args)
   }
 }
 #endif
-
-static std::unique_ptr<ignition::common::SystemPaths> gSystemPaths(
-    new ignition::common::SystemPaths);
 
 /////////////////////////////////////////////////
 // Internal class for SHA1 computation
@@ -327,31 +324,6 @@ std::string ignition::common::systemTimeISO()
   std::strftime(isoStr, sizeof(isoStr), "%FT%T", std::localtime(&tmSec));
 
   return std::string(isoStr) + "." + std::to_string(nano);
-}
-
-/////////////////////////////////////////////////
-std::string ignition::common::logPath()
-{
-  return gSystemPaths->LogPath();
-}
-
-/////////////////////////////////////////////////
-void ignition::common::addSearchPathSuffix(const std::string &_suffix)
-{
-  gSystemPaths->AddSearchPathSuffix(_suffix);
-}
-
-/////////////////////////////////////////////////
-std::string ignition::common::findFile(const std::string &_file)
-{
-  return gSystemPaths->FindFile(_file, true);
-}
-
-/////////////////////////////////////////////////
-std::string ignition::common::findFile(const std::string &_file,
-                                       const bool _searchLocalPath)
-{
-  return gSystemPaths->FindFile(_file, _searchLocalPath);
 }
 
 /////////////////////////////////////////////////

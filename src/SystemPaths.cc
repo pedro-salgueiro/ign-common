@@ -19,6 +19,7 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <memory>
 #include <sstream>
 
 #ifndef _WIN32
@@ -62,7 +63,36 @@ class ignition::common::SystemPathsPrivate
   /// \brief generates paths to try searching for the named library
   public: std::vector<std::string> GenerateLibraryPaths(
               const std::string &_libName) const;
-};
+}
+;
+
+static std::unique_ptr<ignition::common::SystemPaths> gSystemPaths(
+    new ignition::common::SystemPaths);
+
+/////////////////////////////////////////////////
+std::string ignition::common::logPath()
+{
+  return gSystemPaths->LogPath();
+}
+
+/////////////////////////////////////////////////
+void ignition::common::addSearchPathSuffix(const std::string &_suffix)
+{
+  gSystemPaths->AddSearchPathSuffix(_suffix);
+}
+
+/////////////////////////////////////////////////
+std::string ignition::common::findFile(const std::string &_file)
+{
+  return gSystemPaths->FindFile(_file, true);
+}
+
+/////////////////////////////////////////////////
+std::string ignition::common::findFile(const std::string &_file,
+                                       const bool _searchLocalPath)
+{
+  return gSystemPaths->FindFile(_file, _searchLocalPath);
+}
 
 //////////////////////////////////////////////////
 /// \brief adds a path to the list if not already present
