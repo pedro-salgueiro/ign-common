@@ -36,7 +36,6 @@ set (headers
   StringUtils.hh
   SubMesh.hh
   System.hh
-  SystemPaths.hh
   STLLoader.hh
   SVGLoader.hh
   Time.hh
@@ -58,6 +57,7 @@ if(NOT WIN32)
     ImageHeightmap.hh
     MeshCSG.hh
     Video.hh
+    SystemPaths.hh
     VideoEncoder.hh
   )
 endif()

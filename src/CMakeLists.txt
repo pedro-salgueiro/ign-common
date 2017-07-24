@@ -30,7 +30,6 @@ set (sources
   SkeletonNode.cc
   STLLoader.cc
   StringUtils.cc
-  SystemPaths.cc
   SubMesh.cc
   SVGLoader.cc
   Time.cc
@@ -50,6 +49,7 @@ if(NOT WIN32)
     Image.cc
     ImageHeightmap.cc
     MeshCSG.cc
+    SystemPaths.cc
     Video.cc
     VideoEncoder.cc
   )
@@ -82,7 +82,6 @@ set (gtest_sources
   StringUtils_TEST.cc
   SubMesh_TEST.cc
   SVGLoader_TEST.cc
-  SystemPaths_TEST.cc
   Time_TEST.cc
   URI_TEST.cc
   Util_TEST.cc
@@ -97,6 +96,7 @@ if(NOT WIN32)
     GTSMeshUtils_TEST.cc
     Image_TEST.cc
     ImageHeightmap_TEST.cc
+    SystemPaths_TEST.cc
     VideoEncoder_TEST.cc
   )
 endif()
