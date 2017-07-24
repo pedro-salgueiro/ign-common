@@ -26,7 +26,6 @@ set (headers
   NodeTransform.hh
   OBJLoader.hh
   PluginInfo.hh
-  PluginLoader.hh
   PluginMacros.hh
   SemanticVersion.hh
   SingletonT.hh
@@ -44,7 +43,6 @@ set (headers
   Util.hh
   URI.hh
   Uuid.hh
-  WorkerPool.hh
 )
 
 # FIXME: Some classes fail to build on Windows
@@ -56,9 +54,11 @@ if(NOT WIN32)
     Image.hh
     ImageHeightmap.hh
     MeshCSG.hh
+    PluginLoader.hh
     Video.hh
     SystemPaths.hh
     VideoEncoder.hh
+    WorkerPool.hh
   )
 endif()
 

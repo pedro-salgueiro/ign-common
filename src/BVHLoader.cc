@@ -18,7 +18,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <ignition/common/SystemPaths.hh>
 #include <ignition/common/Skeleton.hh>
 #include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/common/Console.hh>

@@ -34,7 +34,6 @@
 #include "ignition/common/Mesh.hh"
 #include "ignition/common/Skeleton.hh"
 #include "ignition/common/SkeletonAnimation.hh"
-#include "ignition/common/SystemPaths.hh"
 #include "ignition/common/Util.hh"
 #include "ignition/common/ColladaLoader.hh"
 

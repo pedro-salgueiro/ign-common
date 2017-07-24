@@ -23,7 +23,6 @@ set (sources
   NodeAnimation.cc
   NodeTransform.cc
   OBJLoader.cc
-  PluginLoader.cc
   SemanticVersion.cc
   Skeleton.cc
   SkeletonAnimation.cc
@@ -37,7 +36,6 @@ set (sources
   URI.cc
   Util.cc
   Uuid.cc
-  WorkerPool.cc
 )
 
 # FIXME: Some classes fail to build on Windows
@@ -49,9 +47,11 @@ if(NOT WIN32)
     Image.cc
     ImageHeightmap.cc
     MeshCSG.cc
+    PluginLoader.cc
     SystemPaths.cc
     Video.cc
     VideoEncoder.cc
+    WorkerPool.cc
   )
 endif()
 
@@ -77,7 +77,6 @@ set (gtest_sources
   MouseEvent_TEST.cc
   MovingWindowFilter_TEST.cc
   OBJLoader_TEST.cc
-  PluginLoader_TEST.cc
   SemanticVersion_TEST.cc
   StringUtils_TEST.cc
   SubMesh_TEST.cc
@@ -86,7 +85,6 @@ set (gtest_sources
   URI_TEST.cc
   Util_TEST.cc
   Uuid_TEST.cc
-  WorkerPool_TEST.cc
 )
 
 # FIXME: Some classes fail to build on Windows
@@ -96,8 +94,10 @@ if(NOT WIN32)
     GTSMeshUtils_TEST.cc
     Image_TEST.cc
     ImageHeightmap_TEST.cc
+    PluginLoader_TEST.cc
     SystemPaths_TEST.cc
     VideoEncoder_TEST.cc
+    WorkerPool_TEST.cc
   )
 endif()
 
@@ -106,7 +106,7 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   ${IGNITION-MATH_LIBRARIES}
   ${tinyxml2_LIBRARIES}
   ${uuid_LIBRARIES}
-  )
+)
 
 if(NOT WIN32)
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
