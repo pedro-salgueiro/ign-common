@@ -19,11 +19,6 @@
 #include <string>
 #include <map>
 
-#if not defined(_WIN32) && defined(HAVE_GTS)
-  #include "ignition/common/GTSMeshUtils.hh"
-  #include "ignition/common/MeshCSG.hh"
-#endif
-
 #include "ignition/common/Console.hh"
 #include "ignition/common/Mesh.hh"
 #include "ignition/common/SubMesh.hh"
@@ -31,6 +26,11 @@
 #include "ignition/common/ColladaExporter.hh"
 #include "ignition/common/STLLoader.hh"
 #include "ignition/common/config.hh"
+
+#if ! defined(_WIN32) && defined(HAVE_GTS)
+  #include "ignition/common/GTSMeshUtils.hh"
+  #include "ignition/common/MeshCSG.hh"
+#endif
 
 #include "ignition/common/MeshManager.hh"
 
@@ -482,7 +482,7 @@ void MeshManager::CreateExtrudedPolyline(const std::string &_name,
     const std::vector<std::vector<ignition::math::Vector2d> > &_polys,
     double _height)
 {
-#if not defined(_WIN32) && defined(HAVE_GTS)
+#if ! defined(_WIN32) && defined(HAVE_GTS)
   // distance tolerence between 2 points. This is used when creating a list
   // of distinct points in the polylines.
   double tol = 1e-4;
@@ -1254,7 +1254,7 @@ void MeshManager::CreateBoolean(const std::string &_name, const Mesh *_m1,
   if (this->HasMesh(_name))
     return;
 
-#if not defined(_WIN32) && defined(HAVE_GTS)
+#if ! defined(_WIN32) && defined(HAVE_GTS)
   MeshCSG csg;
   Mesh *mesh = csg.CreateBoolean(_m1, _m2, _operation, _offset);
   mesh->SetName(_name);

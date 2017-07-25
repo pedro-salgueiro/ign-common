@@ -74,7 +74,7 @@
 /////////////////////////////////////////////////
 // avcodec log callback. We use this to redirect message to gazebo's console
 // messages.
-#if not defined(__WIN32) && defined(HAVE_AVCODEC)
+#if ! defined(__WIN32) && defined(HAVE_AVCODEC)
 void logCallback(void *_ptr, int _level, const char *_fmt, va_list _args)
 {
   static char message[8192];
@@ -301,7 +301,7 @@ bool Sha1::Digest(void const *_buffer, std::size_t _byteCount,
 void ignition::common::load()
 {
   static bool first = true;
-#if not defined(__WIN32) && defined(HAVE_AVCODEC)
+#if ! defined(__WIN32) && defined(HAVE_AVCODEC)
   if (first)
   {
     first = false;

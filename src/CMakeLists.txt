@@ -27,6 +27,7 @@ if(NOT WIN32)
   if (HAVE_IGN_MATH AND HAVE_GTS)
     set (sources ${sources}
       GTSMeshUtils.cc
+      MeshCSG.cc
     )
   endif()
 
@@ -46,11 +47,6 @@ if(NOT WIN32)
     )
   endif (HAVE_FREEIMAGE)
 
-  if (HAVE_GTS)
-    set (headers ${headers}
-      MeshCSG.cc
-    )
-  endif (HAVE_GTS)
 endif()
 
 if (NOT USE_EXTERNAL_TINYXML2)

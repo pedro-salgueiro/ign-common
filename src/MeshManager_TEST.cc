@@ -26,7 +26,7 @@
 
 using namespace ignition;
 
-#if not defined(_WIN32) && defined(HAVE_GTS)
+#if ! defined(_WIN32) && defined(HAVE_GTS)
 class MeshManager : public ignition::testing::AutoLogFixture { };
 
 /////////////////////////////////////////////////

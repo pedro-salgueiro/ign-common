@@ -73,6 +73,7 @@ if(NOT WIN32)
   if (HAVE_IGN_MATH AND HAVE_GTS)
     set (headers ${headers}
       GTSMeshUtils.hh
+      MeshCSG.hh
     )
   endif()
 
@@ -89,12 +90,6 @@ if(NOT WIN32)
       ImageHeightmap.hh
     )
   endif (HAVE_FREEIMAGE)
-
-  if (HAVE_GTS)
-    set (headers ${headers}
-      MeshCSG.hh
-    )
-  endif (HAVE_GTS)
 
 endif()
 
