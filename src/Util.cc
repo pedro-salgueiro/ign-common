@@ -34,17 +34,22 @@
 #include <ignition/common/config.hh>
 #include <ignition/common/SystemPaths.hh>
 #include <ignition/common/Util.hh>
-#include <ignition/common/Uuid.hh>
 #include <ignition/common/Console.hh>
 
+#ifdef HAVE_UUID
+  #include <ignition/common/Uuid.hh>
+#endif
+
 #ifndef _WIN32
-#include <dirent.h>
-#include <limits.h>
-#include <climits>
-#include <ignition/common/ffmpeg_inc.hh>
-#else
-#include <io.h>
-#include "ignition/common/win_dirent.h"
+  #include <dirent.h>
+  #include <limits.h>
+  #include <climits>
+  #ifdef HAVE_AVCODEC
+    #include <ignition/common/ffmpeg_inc.hh>
+  #endif
+  #else
+  #include <io.h>
+  #include "ignition/common/win_dirent.h"
 #endif
 
 
@@ -69,7 +74,7 @@
 /////////////////////////////////////////////////
 // avcodec log callback. We use this to redirect message to gazebo's console
 // messages.
-#ifndef _WIN32
+#if not defined(__WIN32) && defined(HAVE_AVCODEC)
 void logCallback(void *_ptr, int _level, const char *_fmt, va_list _args)
 {
   static char message[8192];
@@ -296,7 +301,7 @@ bool Sha1::Digest(void const *_buffer, std::size_t _byteCount,
 void ignition::common::load()
 {
   static bool first = true;
-#ifndef _WIN32
+#if not defined(__WIN32) && defined(HAVE_AVCODEC)
   if (first)
   {
     first = false;
@@ -423,12 +428,14 @@ std::string ignition::common::sha1(void const *_buffer, std::size_t _byteCount)
   return stream.str();
 }
 
+#ifdef HAVE_UUID
 /////////////////////////////////////////////////
 std::string ignition::common::uuid()
 {
   ignition::common::Uuid uuid;
   return uuid.String();
 }
+#endif
 
 /////////////////////////////////////////////////
 bool ignition::common::isFile(const std::string &_path)

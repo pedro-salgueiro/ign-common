@@ -1,8 +1,10 @@
 set(TEST_TYPE "INTEGRATION")
 
-set(tests
-  plugin.cc
-)
+if (HAVE_LIBDL)
+  set(tests
+    plugin.cc
+  )
+endif()
 
 include_directories(.)
 

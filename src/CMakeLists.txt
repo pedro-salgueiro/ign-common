@@ -3,56 +3,54 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${tinyxml2_INCLUDE_DIRS})
 
 set (sources
-  Animation.cc
   Base64.cc
   Battery.cc
-  BVHLoader.cc
-  ColladaExporter.cc
-  ColladaLoader.cc
   Console.cc
-  Dem.cc
   Event.cc
   KeyEvent.cc
-  KeyFrame.cc
-  Material.cc
-  MaterialDensity.cc
-  Mesh.cc
-  MeshExporter.cc
-  MeshManager.cc
-  MouseEvent.cc
-  NodeAnimation.cc
-  NodeTransform.cc
-  OBJLoader.cc
-  PluginLoader.cc
   SemanticVersion.cc
-  Skeleton.cc
-  SkeletonAnimation.cc
-  SkeletonNode.cc
-  STLLoader.cc
   StringUtils.cc
   SystemPaths.cc
-  SubMesh.cc
-  SVGLoader.cc
   Time.cc
   Timer.cc
   URI.cc
   Util.cc
-  Uuid.cc
   WorkerPool.cc
 )
 
 # FIXME: Some classes fail to build on Windows
 if(NOT WIN32)
   set (sources ${sources}
-    AudioDecoder.cc
-    ffmpeg_inc.cc
-    GTSMeshUtils.cc
-    Image.cc
-    ImageHeightmap.cc
-    MeshCSG.cc
-    Video.cc
-    VideoEncoder.cc
+    PluginLoader.cc
   )
+
+  if (HAVE_IGN_MATH)
+    set (sources ${sources}
+      GTSMeshUtils.cc
+    )
+  endif()
+
+  if (HAVE_AVCODEC)
+    set (sources ${sources}
+      AudioDecoder.cc
+      ffmpeg_inc.cc
+      Video.cc
+      VideoEncoder.cc
+    )
+  endif()
+
+  if (HAVE_FREEIMAGE)
+    set (sources ${sources}
+      Image.cc
+      ImageHeightmap.cc
+    )
+  endif (HAVE_FREEIMAGE)
+
+  if (HAVE_GTS)
+    set (headers ${headers}
+      MeshCSG.cc
+    )
+  endif (HAVE_GTS)
 endif()
 
 if (NOT USE_EXTERNAL_TINYXML2)
@@ -60,45 +58,99 @@ if (NOT USE_EXTERNAL_TINYXML2)
 endif()
 
 set (gtest_sources
-  Animation_TEST.cc
   Base64_TEST.cc
   Battery_TEST.cc
-  ColladaExporter_TEST.cc
-  ColladaLoader_TEST.cc
-  Console_TEST.cc
-  Dem_TEST.cc
   EnumIface_TEST.cc
   Event_TEST.cc
   KeyEvent_TEST.cc
-  Material_TEST.cc
-  MaterialDensity_TEST.cc
-  Mesh_TEST.cc
-  MeshManager_TEST.cc
-  MouseEvent_TEST.cc
-  MovingWindowFilter_TEST.cc
-  OBJLoader_TEST.cc
-  PluginLoader_TEST.cc
   SemanticVersion_TEST.cc
   StringUtils_TEST.cc
-  SubMesh_TEST.cc
-  SVGLoader_TEST.cc
   SystemPaths_TEST.cc
   Time_TEST.cc
   URI_TEST.cc
   Util_TEST.cc
-  Uuid_TEST.cc
   WorkerPool_TEST.cc
 )
+
+if (HAVE_IGN_MATH)
+
+  set (sources ${sources}
+    Animation.cc
+    BVHLoader.cc
+    ColladaExporter.cc
+    ColladaLoader.cc
+    Dem.cc
+    KeyFrame.cc
+    Skeleton.cc
+    Material.cc
+    MaterialDensity.cc
+    Mesh.cc
+    MeshExporter.cc
+    MeshManager.cc
+    MouseEvent.cc
+    NodeAnimation.cc
+    NodeTransform.cc
+    OBJLoader.cc
+    SkeletonAnimation.cc
+    SkeletonNode.cc
+    SubMesh.cc
+    STLLoader.cc
+    SVGLoader.cc
+  )
+
+  set (gtest_sources ${gtest_sources}
+    Animation_TEST.cc
+    ColladaExporter_TEST.cc
+    ColladaLoader_TEST.cc
+    Dem_TEST.cc
+    Material_TEST.cc
+    MaterialDensity_TEST.cc
+    Mesh_TEST.cc
+    MeshManager_TEST.cc
+    MouseEvent_TEST.cc
+    MovingWindowFilter_TEST.cc
+    OBJLoader_TEST.cc
+    SubMesh_TEST.cc
+    SVGLoader_TEST.cc
+  )
+
+endif(HAVE_IGN_MATH)
+
+if (HAVE_UUID)
+  set (sources ${sources}
+    Uuid.cc
+  )
+  set (gtest_sources ${gtest_sources}
+    Console_TEST.cc
+    Uuid_TEST.cc
+  )
+endif (HAVE_UUID)
 
 # FIXME: Some classes fail to build on Windows
 if(NOT WIN32)
   set (gtest_sources ${gtest_sources}
     #AudioDecoder_TEST.cc
-    GTSMeshUtils_TEST.cc
-    Image_TEST.cc
-    ImageHeightmap_TEST.cc
-    VideoEncoder_TEST.cc
+    PluginLoader_TEST.cc
   )
+
+  if (HAVE_IGN_MATH)
+    set (gtest_sources ${gtest_sources}
+      GTSMeshUtils_TEST.cc
+    )
+  endif()
+
+  if (HAVE_FREEIMAGE)
+    set (gtest_sources ${gtest_sources}
+      Image_TEST.cc
+      ImageHeightmap_TEST.cc
+    )
+  endif (HAVE_FREEIMAGE)
+
+  if (HAVE_AVCODEC)
+    set (gtest_sources ${gtest_sources}
+      VideoEncoder_TEST.cc
+    )
+  endif (HAVE_AVCODEC)
 endif()
 
 ign_add_library(${PROJECT_LIBRARY_TARGET_NAME} ${sources})
@@ -106,18 +158,30 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   ${IGNITION-MATH_LIBRARIES}
   ${tinyxml2_LIBRARIES}
   ${uuid_LIBRARIES}
+  ${CMAKE_DL_LIBS}
   )
 
 if(NOT WIN32)
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
-    ${freeimage_LIBRARIES}
-    ${gts_LIBRARIES}
     ${libavcodec_LIBRARIES}
     ${libavformat_LIBRARIES}
     ${libavutil_LIBRARIES}
     ${libavdevice_LIBRARIES}
     ${libswscale_LIBRARIES}
   )
+
+if (HAVE_FREEIMAGE)
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+    ${freeimage_LIBRARIES}
+  )
+endif()
+
+if (HAVE_FREEIMAGE)
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+    ${gts_LIBRARIES}
+  )
+endif()
+
 endif()
 
 if (UNIX AND NOT APPLE)
