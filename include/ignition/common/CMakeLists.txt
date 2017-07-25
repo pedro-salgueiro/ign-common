@@ -70,7 +70,7 @@ if(NOT WIN32)
     VideoEncoder.hh
   )
 
-  if (HAVE_IGN_MATH)
+  if (HAVE_IGN_MATH AND HAVE_GTS)
     set (headers ${headers}
       GTSMeshUtils.hh
     )

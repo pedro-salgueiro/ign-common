@@ -24,7 +24,7 @@ if(NOT WIN32)
     PluginLoader.cc
   )
 
-  if (HAVE_IGN_MATH)
+  if (HAVE_IGN_MATH AND HAVE_GTS)
     set (sources ${sources}
       GTSMeshUtils.cc
     )
@@ -133,7 +133,7 @@ if(NOT WIN32)
     PluginLoader_TEST.cc
   )
 
-  if (HAVE_IGN_MATH)
+  if (HAVE_IGN_MATH AND HAVE_GTS)
     set (gtest_sources ${gtest_sources}
       GTSMeshUtils_TEST.cc
     )
