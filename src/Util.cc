@@ -37,6 +37,10 @@
 #include <ignition/common/Uuid.hh>
 #include <ignition/common/Console.hh>
 
+#ifdef HAVE_AVCODEC
+  #include <ignition/common/ffmpeg_inc.hh>
+#endif
+
 #ifndef _WIN32
   #include <dirent.h>
   #include <limits.h>
@@ -44,10 +48,6 @@
 #else
   #include <io.h>
   #include "ignition/common/win_dirent.h"
-#endif
-
-#ifdef HAVE_AVCODEC
-  #include <ignition/common/ffmpeg_inc.hh>
 #endif
 
 #define LEFT_ROTATE(x, n) (((x) << (n)) ^ ((x) >> (32-(n))))
