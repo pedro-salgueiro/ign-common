@@ -52,7 +52,7 @@ if(NOT WIN32)
 endif()
 
 if (HAVE_AVCODEC AND HAVE_AVFORMAT AND HAVE_AVDEVICE AND HAVE_SWSCALE)
-  set (headers ${headers}
+  set (sources ${sources}
     AudioDecoder.cc
     ffmpeg_inc.cc
     Video.cc
