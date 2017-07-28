@@ -44,12 +44,17 @@ set (sources
 # FIXME: Some classes fail to build on Windows
 if(NOT WIN32)
   set (sources ${sources}
-    AudioDecoder.cc
-    ffmpeg_inc.cc
     GTSMeshUtils.cc
     Image.cc
     ImageHeightmap.cc
     MeshCSG.cc
+  )
+endif()
+
+if (HAVE_AVCODEC AND HAVE_AVFORMAT AND HAVE_AVDEVICE AND HAVE_SWSCALE)
+  set (headers ${headers}
+    AudioDecoder.cc
+    ffmpeg_inc.cc
     Video.cc
     VideoEncoder.cc
   )
@@ -93,10 +98,15 @@ set (gtest_sources
 # FIXME: Some classes fail to build on Windows
 if(NOT WIN32)
   set (gtest_sources ${gtest_sources}
-    #AudioDecoder_TEST.cc
     GTSMeshUtils_TEST.cc
     Image_TEST.cc
     ImageHeightmap_TEST.cc
+  )
+endif()
+
+if (HAVE_AVCODEC AND HAVE_AVFORMAT AND HAVE_AVDEVICE AND HAVE_SWSCALE)
+  set (gtest_sources ${gtest_sources}
+    #AudioDecoder_TEST.cc
     VideoEncoder_TEST.cc
   )
 endif()

@@ -150,7 +150,10 @@ if (PKG_CONFIG_FOUND)
     # Find libswscale format
     pkg_check_modules(libswscale libswscale)
     if (NOT libswscale_FOUND)
-      BUILD_ERROR("libswscale not found.")
+      BUILD_WARNING("libswscale not found.")
+    else (NOT libswscale_FOUND)
+      message(STATUS "libswscale found.")
+      set (HAVE_SWSCALE True)
     endif ()
 
     ########################################
@@ -172,21 +175,30 @@ if (PKG_CONFIG_FOUND)
     # Find AV format
     pkg_check_modules(libavformat libavformat)
     if (NOT libavformat_FOUND)
-      BUILD_ERROR("libavformat not found.")
+      BUILD_WARNING("libavformat not found.")
+    else (NOT libavformat_FOUND)
+      message(STATUS "libavformat found.")
+      set (HAVE_AVFORMAT True)
     endif()
 
     ########################################
     # Find avcodec
     pkg_check_modules(libavcodec libavcodec)
     if (NOT libavcodec_FOUND)
-      BUILD_ERROR("libavcodec not found.")
+      BUILD_WARNING("libavcodec not found.")
+    else (NOT libavcodec_FOUND)
+      message(STATUS "libavcodec found.")
+      set (HAVE_AVCODEC True)
     endif()
 
     ########################################
     # Find avutil
     pkg_check_modules(libavutil libavutil)
     if (NOT libavutil_FOUND)
-      BUILD_ERROR("libavutil not found.")
+      BUILD_WARNING("libavutil not found.")
+    else (NOT libavutil_FOUND)
+      message(STATUS "libavutil found.")
+      set (HAVE_AVUTIL True)
     endif ()
   endif()
 

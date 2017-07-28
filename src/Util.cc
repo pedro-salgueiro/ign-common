@@ -38,15 +38,17 @@
 #include <ignition/common/Console.hh>
 
 #ifndef _WIN32
-#include <dirent.h>
-#include <limits.h>
-#include <climits>
-#include <ignition/common/ffmpeg_inc.hh>
+  #include <dirent.h>
+  #include <limits.h>
+  #include <climits>
 #else
-#include <io.h>
-#include "ignition/common/win_dirent.h"
+  #include <io.h>
+  #include "ignition/common/win_dirent.h"
 #endif
 
+#ifdef HAVE_AVCODEC
+  #include <ignition/common/ffmpeg_inc.hh>
+#endif
 
 #define LEFT_ROTATE(x, n) (((x) << (n)) ^ ((x) >> (32-(n))))
 
@@ -69,7 +71,7 @@
 /////////////////////////////////////////////////
 // avcodec log callback. We use this to redirect message to gazebo's console
 // messages.
-#ifndef _WIN32
+#ifdef HAVE_AVCODEC
 void logCallback(void *_ptr, int _level, const char *_fmt, va_list _args)
 {
   static char message[8192];
@@ -295,8 +297,8 @@ bool Sha1::Digest(void const *_buffer, std::size_t _byteCount,
 /////////////////////////////////////////////////
 void ignition::common::load()
 {
+#ifdef HAVE_AVCODEC
   static bool first = true;
-#ifndef _WIN32
   if (first)
   {
     first = false;

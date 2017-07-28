@@ -51,16 +51,22 @@ set (headers
 # FIXME: Some classes fail to build on Windows
 if(NOT WIN32)
   set (headers ${headers}
-    AudioDecoder.hh
-    ffmpeg_inc.hh
     GTSMeshUtils.hh
     Image.hh
     ImageHeightmap.hh
     MeshCSG.hh
+  )
+endif()
+
+if (HAVE_AVCODEC AND HAVE_AVFORMAT AND HAVE_AVDEVICE AND HAVE_SWSCALE)
+  set (headers ${headers}
+    AudioDecoder.hh
+    ffmpeg_inc.hh
     Video.hh
     VideoEncoder.hh
   )
 endif()
+
 
 set (ign_headers "" CACHE INTERNAL "Ignition headers" FORCE)
 foreach (hdr ${headers})
