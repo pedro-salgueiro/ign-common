@@ -15,5 +15,8 @@
 #cmakedefine BUILD_TYPE_RELEASE 1
 #cmakedefine HAVE_FFMPEG 1
 #cmakedefine HAVE_GTS 1
-#cmakedefine HAVE_GTS 1
 #cmakedefine HAVE_AVDEVICE 1
+#cmakedefine HAVE_SWSCALE 1
+#cmakedefine HAVE_AVFORMAT 1
+#cmakedefine HAVE_AVCODEC 1
+#cmakedefine HAVE_AVUTIL 1
