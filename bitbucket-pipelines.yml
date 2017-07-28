@@ -6,36 +6,37 @@
 image: ubuntu:16.04
 
 pipelines:
-  '*':
-    - step:
-        script:
-          - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
-          - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
-          - apt-get update
-          - apt-get -y install
-            cmake pkg-config python ruby-ronn uuid-dev
-            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
-            libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
-            libignition-math3-dev
-          - mkdir build
-          - cd build
-          - cmake ..
-          - make
-          - make test
-          - make install
-  '*':
-    - step:
-        script:
-          - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
-          - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
-          - apt-get update
-          - apt-get -y install
-            cmake pkg-config python ruby-ronn uuid-dev
-            libfreeimage-dev libgts-dev libtinyxml2-dev
-            libignition-math3-dev
-          - mkdir build
-          - cd build
-          - cmake ..
-          - make
-          - make test
-          - make install
+  branches:
+    '*':
+      - step:
+          script:
+            - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
+            - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+            - apt-get update
+            - apt-get -y install
+              cmake pkg-config python ruby-ronn uuid-dev
+              libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+              libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
+              libignition-math3-dev
+            - mkdir build
+            - cd build
+            - cmake ..
+            - make
+            - make test
+            - make install
+    '*':
+      - step:
+          script:
+            - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
+            - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+            - apt-get update
+            - apt-get -y install
+              cmake pkg-config python ruby-ronn uuid-dev
+              libfreeimage-dev libgts-dev libtinyxml2-dev
+              libignition-math3-dev
+            - mkdir build
+            - cd build
+            - cmake ..
+            - make
+            - make test
+            - make install
