@@ -6,7 +6,7 @@
 image: ubuntu:16.04
 
 pipelines:
-  default:
+  '*':
     - step:
         script:
           - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
@@ -23,7 +23,7 @@ pipelines:
           - make
           - make test
           - make install
-  default:
+  '*':
     - step:
         script:
           - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable xenial main" > /etc/apt/sources.list.d/gazebo-stable.list
