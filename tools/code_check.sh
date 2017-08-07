@@ -71,8 +71,10 @@ if [ $CPPCHECK_LT_161 -eq 0 ]; then
   # use --language argument if 1.57 or greater (issue #907)
   CPPCHECK_BASE="$CPPCHECK_BASE --language=c++"
 fi
-CPPCHECK_INCLUDES="-I . -I ./include -I $builddir -I test"
-CPPCHECK_RULES="-DIGNITION_COMMON_VISIBLE=1"
+CPPCHECK_INCLUDES="-I ./include -I $builddir -I test -I ./include/ignition/common"
+CPPCHECK_RULES="-DIGNITION_COMMON_VISIBLE"\
+" --rule-file=./tools/cppcheck_rules/header_guard.rule"\
+" --rule-file=./tools/cppcheck_rules/namespace_AZ.rule"
 CPPCHECK_CMD1A="-j 4 --enable=style,performance,portability,information"
 CPPCHECK_CMD1B="$CPPCHECK_RULES $CPPCHECK_FILES"
 CPPCHECK_CMD1="$CPPCHECK_CMD1A $CPPCHECK_CMD1B"
