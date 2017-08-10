@@ -21,6 +21,7 @@
 #define IGNITION_UNITTEST_SPECIALIZED_PLUGIN_ACCESS
 
 #include <gtest/gtest.h>
+#include <dlfcn.h>
 #include <iostream>
 #include "ignition/common/PluginLoader.hh"
 #include "ignition/common/SystemPaths.hh"
@@ -33,13 +34,21 @@
 
 
 /////////////////////////////////////////////////
-TEST(PluginLoader, LoadExistingLibrary)
+std::string GetPluginLibraryPath()
 {
   std::string projectPath(PROJECT_BINARY_PATH);
 
   ignition::common::SystemPaths sp;
   sp.AddPluginPaths(projectPath + "/test/util");
   std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
+
+  return path;
+}
+
+/////////////////////////////////////////////////
+TEST(PluginLoader, LoadExistingLibrary)
+{
+  const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -97,6 +106,7 @@ TEST(PluginLoader, LoadExistingLibrary)
 }
 
 
+/////////////////////////////////////////////////
 class SomeInterface
 {
   public: static constexpr const char* InterfaceName = "SomeInterface";
@@ -108,13 +118,10 @@ using SomeSpecializedPluginPtr =
         test::util::DummyIntBase,
         test::util::DummySetterBase>;
 
+/////////////////////////////////////////////////
 TEST(SpecializedPluginPtr, Construction)
 {
-  std::string projectPath(PROJECT_BINARY_PATH);
-
-  ignition::common::SystemPaths sp;
-  sp.AddPluginPaths(projectPath + "/test/util");
-  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
+  const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -169,6 +176,7 @@ TEST(SpecializedPluginPtr, Construction)
   EXPECT_EQ(nullptr, someInterface);
 }
 
+/////////////////////////////////////////////////
 template <typename PluginPtrType1, typename PluginPtrType2>
 void TestSetAndMapUsage(
     const ignition::common::PluginLoader &loader,
@@ -225,6 +233,7 @@ void TestSetAndMapUsage(
   EXPECT_FALSE(unorderedMap.insert(std::make_pair(plugin2, "def")).second);
 }
 
+/////////////////////////////////////////////////
 using SingleSpecializedPluginPtr =
     ignition::common::SpecializedPluginPtr<SomeInterface>;
 
@@ -233,16 +242,12 @@ using AnotherSpecializedPluginPtr =
         SomeInterface,
         test::util::DummyIntBase>;
 
+/////////////////////////////////////////////////
 TEST(PluginPtr, CopyMoveSemantics)
 {
   ignition::common::PluginPtr plugin;
-  EXPECT_FALSE(!plugin.IsEmpty());
 
-  std::string projectPath(PROJECT_BINARY_PATH);
-
-  ignition::common::SystemPaths sp;
-  sp.AddPluginPaths(projectPath + "/test/util");
-  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
+  const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -301,6 +306,7 @@ TEST(PluginPtr, CopyMoveSemantics)
   EXPECT_TRUE(c_plugin == otherPlugin);
 }
 
+/////////////////////////////////////////////////
 void SetSomeValues(std::shared_ptr<test::util::DummySetterBase> setter)
 {
   setter->SetIntegerValue(2468);
@@ -308,6 +314,7 @@ void SetSomeValues(std::shared_ptr<test::util::DummySetterBase> setter)
   setter->SetName("Changed using shared_ptr");
 }
 
+/////////////////////////////////////////////////
 void CheckSomeValues(
     std::shared_ptr<test::util::DummyIntBase> getInt,
     std::shared_ptr<test::util::DummyDoubleBase> getDouble,
@@ -318,13 +325,10 @@ void CheckSomeValues(
   EXPECT_EQ(std::string("Changed using shared_ptr"), getName->MyNameIs());
 }
 
+/////////////////////////////////////////////////
 TEST(PluginPtr, as_shared_ptr)
 {
-  std::string projectPath(PROJECT_BINARY_PATH);
-
-  ignition::common::SystemPaths sp;
-  sp.AddPluginPaths(projectPath + "/test/util");
-  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
+  const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -372,6 +376,123 @@ TEST(PluginPtr, as_shared_ptr)
   SetSomeValues(setter);
   CheckSomeValues(getInt, getDouble, getName);
 }
+
+/////////////////////////////////////////////////
+ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
+{
+  ignition::common::PluginLoader pl;
+  pl.LoadLibrary(_path);
+
+  return pl.Instantiate("test::util::DummyMultiPlugin");
+}
+
+/////////////////////////////////////////////////
+// Note (MXG): According to some online discussions, there is no guarantee
+// that a correct number of calls to dlclose(void*) will actually unload the
+// shared library. In fact, there is no guarantee that a dynamically loaded
+// library from dlopen will ever be unloaded until the program is terminated.
+// This may cause dlopen(~, RTLD_NOLOAD) to return a non-null handle even if
+// we are managing the handles correctly. If the test for
+// EXPECT_EQ(nullptr, dlHandle) is found to fail occasionally, we should
+// consider removing it because it may be unreliable. At the very least, if
+// it fails very infrequently, then we can safely consider the failures to be
+// false negatives.
+#define CHECK_FOR_LIBRARY(_path, _isLoaded)\
+{\
+  void *dlHandle = dlopen(_path.c_str(), \
+                          RTLD_NOLOAD | RTLD_LAZY | RTLD_GLOBAL);\
+\
+  if(_isLoaded)\
+    EXPECT_NE(nullptr, dlHandle);\
+  else\
+    EXPECT_EQ(nullptr, dlHandle);\
+\
+  if(dlHandle)\
+    dlclose(dlHandle);\
+}
+
+/////////////////////////////////////////////////
+TEST(PluginPtr, LibraryManagement)
+{
+  const std::string path = GetPluginLibraryPath();
+
+  // Use scoping to destroy somePlugin
+  {
+    ignition::common::PluginPtr somePlugin = GetSomePlugin(path);
+    EXPECT_TRUE(somePlugin);
+
+    CHECK_FOR_LIBRARY(path, true);
+  }
+
+  CHECK_FOR_LIBRARY(path, false);
+
+  // Test that we can forget libraries
+  {
+    ignition::common::PluginLoader pl;
+    pl.LoadLibrary(path);
+
+    CHECK_FOR_LIBRARY(path, true);
+
+    EXPECT_TRUE(pl.ForgetLibrary(path));
+
+    CHECK_FOR_LIBRARY(path, false);
+  }
+
+  // Test that we can forget libraries, but the library will remain loaded if
+  // a plugin instance is still using it.
+  {
+    ignition::common::PluginPtr plugin;
+
+    ignition::common::PluginLoader pl;
+    pl.LoadLibrary(path);
+
+    CHECK_FOR_LIBRARY(path, true);
+
+    plugin = pl.Instantiate("test::util::DummyMultiPlugin");
+    EXPECT_TRUE(plugin);
+
+    EXPECT_TRUE(pl.ForgetLibrary(path));
+
+    CHECK_FOR_LIBRARY(path, true);
+  }
+
+  // Check that the library will be unloaded once the plugin instance is deleted
+  CHECK_FOR_LIBRARY(path, false);
+
+  // Check that we can unload libraries based on plugin name
+  {
+    ignition::common::PluginLoader pl;
+    pl.LoadLibrary(path);
+
+    CHECK_FOR_LIBRARY(path, true);
+
+    pl.ForgetLibraryOfPlugin("test::util::DummyMultiPlugin");
+
+    CHECK_FOR_LIBRARY(path, false);
+  }
+
+  // Check that the std::shared_ptrs that we provide for interfaces will
+  // successfully keep the library loaded.
+  {
+    std::shared_ptr<test::util::DummyNameBase> interface;
+
+    CHECK_FOR_LIBRARY(path, false);
+    {
+      interface = GetSomePlugin(path)->as_shared_ptr<test::util::DummyNameBase>(
+            "test::util::DummyNameBase");
+      EXPECT_EQ("DummyMultiPlugin", interface->MyNameIs());
+
+      CHECK_FOR_LIBRARY(path, true);
+    }
+
+    EXPECT_EQ("DummyMultiPlugin", interface->MyNameIs());
+
+    CHECK_FOR_LIBRARY(path, true);
+  }
+
+  CHECK_FOR_LIBRARY(path, false);
+}
+
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)
