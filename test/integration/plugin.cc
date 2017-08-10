@@ -491,6 +491,25 @@ TEST(PluginPtr, LibraryManagement)
   }
 
   CHECK_FOR_LIBRARY(path, false);
+
+  // Check that mulitple PluginLoaders can work side-by-side
+  {
+    ignition::common::PluginLoader pl1;
+    pl1.LoadLibrary(path);
+
+    CHECK_FOR_LIBRARY(path, true);
+
+    {
+      ignition::common::PluginLoader pl2;
+      pl2.LoadLibrary(path);
+
+      CHECK_FOR_LIBRARY(path, true);
+    }
+
+    CHECK_FOR_LIBRARY(path, true);
+  }
+
+  CHECK_FOR_LIBRARY(path, false);
 }
 
 
