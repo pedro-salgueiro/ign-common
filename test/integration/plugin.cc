@@ -16,8 +16,8 @@
 */
 
 // Defining this macro before including ignition/common/SpecializedPluginPtr.hh
-// allows us to test that the low-cost routines are being used are being used to
-// access the specialized plugin interfaces.
+// allows us to test that the low-cost routines are being used to access the
+// specialized plugin interfaces.
 #define IGNITION_UNITTEST_SPECIALIZED_PLUGIN_ACCESS
 
 #include <gtest/gtest.h>
@@ -61,7 +61,7 @@ TEST(PluginLoader, LoadExistingLibrary)
   std::cout << pl.PrettyStr();
 
   // Make sure the expected interfaces were loaded.
-  ASSERT_EQ(4u, pl.InterfacesImplemented().size());
+  EXPECT_EQ(4u, pl.InterfacesImplemented().size());
   EXPECT_EQ(1u, pl.InterfacesImplemented()
             .count("::test::util::DummyNameBase"));
   EXPECT_EQ(2u, pl.PluginsImplementing("::test::util::DummyNameBase").size());
@@ -70,11 +70,11 @@ TEST(PluginLoader, LoadExistingLibrary)
 
   ignition::common::PluginPtr firstPlugin =
       pl.Instantiate("test::util::DummySinglePlugin");
-  EXPECT_TRUE(!firstPlugin.IsEmpty());
+  EXPECT_FALSE(firstPlugin.IsEmpty());
 
   ignition::common::PluginPtr secondPlugin =
       pl.Instantiate("test::util::DummyMultiPlugin");
-  EXPECT_TRUE(!secondPlugin.IsEmpty());
+  EXPECT_FALSE(secondPlugin.IsEmpty());
 
   // Check that the DummyNameBase interface exists and that it returns the
   // correct value.
@@ -101,7 +101,7 @@ TEST(PluginLoader, LoadExistingLibrary)
   // returns the correct value.
   nameBase = secondPlugin->GetInterface<test::util::DummyNameBase>(
         "test::util::DummyNameBase");
-  ASSERT_NE(nullptr, doubleBase);
+  ASSERT_NE(nullptr, nameBase);
   EXPECT_EQ(std::string("DummyMultiPlugin"), nameBase->MyNameIs());
 }
 
@@ -109,7 +109,7 @@ TEST(PluginLoader, LoadExistingLibrary)
 /////////////////////////////////////////////////
 class SomeInterface
 {
-  public: static constexpr const char* InterfaceName = "SomeInterface";
+  public: IGN_COMMON_SPECIALIZE_INTERFACE(SomeInterface)
 };
 
 using SomeSpecializedPluginPtr =
@@ -127,8 +127,9 @@ TEST(SpecializedPluginPtr, Construction)
   ignition::common::PluginLoader pl;
   pl.LoadLibrary(path);
 
-  SomeSpecializedPluginPtr plugin(pl.Instantiate("::test::util::DummyMultiPlugin"));
-  EXPECT_TRUE(!plugin.IsEmpty());
+  SomeSpecializedPluginPtr plugin(
+        pl.Instantiate("::test::util::DummyMultiPlugin"));
+  EXPECT_FALSE(plugin.IsEmpty());
 
   // Make sure the specialized interface is available, that it is accessed using
   // the specialized access, and that it returns the expected value.
@@ -246,6 +247,7 @@ using AnotherSpecializedPluginPtr =
 TEST(PluginPtr, CopyMoveSemantics)
 {
   ignition::common::PluginPtr plugin;
+  EXPECT_TRUE(plugin.IsEmpty());
 
   const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
@@ -254,11 +256,11 @@ TEST(PluginPtr, CopyMoveSemantics)
   pl.LoadLibrary(path);
 
   plugin = pl.Instantiate("test::util::DummySinglePlugin");
-  EXPECT_TRUE(!plugin.IsEmpty());
+  EXPECT_FALSE(plugin.IsEmpty());
 
   ignition::common::PluginPtr otherPlugin =
       pl.Instantiate("test::util::DummySinglePlugin");
-  EXPECT_TRUE(!otherPlugin.IsEmpty());
+  EXPECT_FALSE(otherPlugin.IsEmpty());
 
   EXPECT_TRUE(plugin != otherPlugin);
   EXPECT_FALSE(plugin == otherPlugin);
