@@ -152,11 +152,8 @@ message (STATUS "----------------------------------------\n")
 
 #####################################
 MESSAGE(STATUS "Checking ignition build type")
-# Set the default build type
-if (NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
-        "Choose the type of build, options are: Debug Release RelWithDebInfo Profile Check")
-endif (NOT CMAKE_BUILD_TYPE)
+set (CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING
+    "Choose the type of build, options are: Debug Release RelWithDebInfo Profile Check")
 # TODO: still convert to uppercase to keep backwards compatibility with
 # uppercase old supported and deprecated modes
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_UPPERCASE)
@@ -179,7 +176,7 @@ elseif ("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "COVERAGE")
   set (BUILD_TYPE_DEBUG TRUE)
   SETUP_TARGET_FOR_COVERAGE(coverage ctest coverage)
 else()
-  build_error("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} unknown. Valid options are: Debug Release RelWithDebInfo Profile Check")
+  build_error("CMAKE_BUILD_TYPE [${CMAKE_BUILD_TYPE}] unknown. Valid options are: Debug Release RelWithDebInfo Profile Check")
 endif()
 
 #####################################
