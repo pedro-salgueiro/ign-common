@@ -18,6 +18,10 @@
 #include <sys/types.h>
 #include <iostream>
 #include <algorithm>
+#include <functional>
+#include <list>
+#include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 #include <cctype>
@@ -29,13 +33,13 @@
 #include "ignition/common/win_dirent.h"
 #endif
 
+#include "ignition/common/Console.hh"
 #include "ignition/common/StringUtils.hh"
 #include "ignition/common/SystemPaths.hh"
-#include "ignition/common/Console.hh"
+#include "ignition/common/Util.hh"
 
 using namespace ignition;
 using namespace common;
-
 
 // Private data class
 class ignition::common::SystemPathsPrivate
@@ -65,8 +69,8 @@ class ignition::common::SystemPathsPrivate
 
 //////////////////////////////////////////////////
 /// \brief adds a path to the list if not already present
-/// \param[in]_path the path
-/// \param[in]_list the list
+/// \param[in] _path the path
+/// \param[in, out] _list the list
 void insertUnique(const std::string &_path, std::list<std::string> &_list)
 {
   if (std::find(_list.begin(), _list.end(), _path) == _list.end())
@@ -77,8 +81,6 @@ void insertUnique(const std::string &_path, std::list<std::string> &_list)
 SystemPaths::SystemPaths()
 : dataPtr(new SystemPathsPrivate)
 {
-  this->dataPtr->pluginPaths.clear();
-
   std::string home, path, fullPath;
   if (!env("HOME", home))
     home = "/tmp/gazebo";
@@ -228,7 +230,7 @@ std::vector<std::string> SystemPathsPrivate::GenerateLibraryPaths(
 }
 
 //////////////////////////////////////////////////
-std::string SystemPaths::FindFileURI(const std::string &_uri)
+std::string SystemPaths::FindFileURI(const std::string &_uri) const
 {
   int index = _uri.find("://");
   std::string prefix = _uri.substr(0, index);
@@ -253,7 +255,7 @@ std::string SystemPaths::FindFileURI(const std::string &_uri)
 
 //////////////////////////////////////////////////
 std::string SystemPaths::FindFile(const std::string &_filename,
-                                  bool _searchLocalPath)
+                                  const bool _searchLocalPath) const
 {
   std::string path;
 
