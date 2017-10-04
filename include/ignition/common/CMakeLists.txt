@@ -29,14 +29,11 @@ set (headers
   PluginInfo.hh
   PluginLoader.hh
   PluginMacros.hh
-  PluginPtr.hh
   SemanticVersion.hh
   SingletonT.hh
   Skeleton.hh
   SkeletonAnimation.hh
   SkeletonNode.hh
-  SpecializedPlugin.hh
-  SpecializedPluginPtr.hh
   StringUtils.hh
   SubMesh.hh
   SuppressWarning.hh
@@ -57,10 +54,7 @@ set (headers
 
 set (detail_headers
   detail/Plugin.hh
-  detail/PluginLoader.hh
   detail/PluginMacros.hh
-  detail/PluginPtr.hh
-  detail/SpecializedPlugin.hh
   detail/SuppressWarning.hh
   detail/TemplateHelpers.hh
 )

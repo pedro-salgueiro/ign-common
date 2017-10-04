@@ -5,8 +5,6 @@ set(static_assert_tests
   # plugin_not_fully_qualified_base
   plugin_wrong_base_class
   plugin_not_global_ns
-  plugin_bad_const_construct
-  plugin_bad_const_assignment
   )
 
 if (UNIX)
@@ -31,10 +29,4 @@ if (UNIX)
 
   set_tests_properties(STATIC_ASSERT_plugin_wrong_base_class PROPERTIES
     PASS_REGULAR_EXPRESSION "is not a base class of")
-
-  set_tests_properties(STATIC_ASSERT_plugin_bad_const_construct PROPERTIES
-    PASS_REGULAR_EXPRESSION "The requested PluginPtr cast would discard const qualifiers")
-
-  set_tests_properties(STATIC_ASSERT_plugin_bad_const_assignment PROPERTIES
-    PASS_REGULAR_EXPRESSION "The requested PluginPtr cast would discard const qualifiers")
 endif()
