@@ -15,7 +15,7 @@
  *
 */
 
-#include "ignition/common/PluginMacros.hh"
+#include "ignition/common/RegisterPlugin.hh"
 
 namespace ns
 {

@@ -15,7 +15,7 @@
  *
 */
 
-#include "ignition/common/PluginMacros.hh"
+#include "ignition/common/RegisterPlugin.hh"
 #include "util/DummyPlugins.hh"
 
 
@@ -70,10 +70,5 @@ DummyMultiPlugin::DummyMultiPlugin()
 }
 }
 
-IGN_COMMON_BEGIN_ADDING_PLUGINS
-  IGN_COMMON_ADD_PLUGIN(test::util::DummySinglePlugin, test::util::DummyNameBase)
-  IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyNameBase)
-  IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyDoubleBase)
-  IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyIntBase)
-  IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummySetterBase)
-IGN_COMMON_FINISH_ADDING_PLUGINS
+IGN_COMMON_ADD_PLUGIN(test::util::DummySinglePlugin, test::util::DummyNameBase)
+IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyNameBase)

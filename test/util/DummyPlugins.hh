@@ -22,7 +22,7 @@
 #include <string>
 
 #include <ignition/common/System.hh>
-#include <ignition/common/PluginMacros.hh>
+#include <ignition/common/RegisterPlugin.hh>
 
 namespace test
 {

@@ -1,1 +1,3 @@
-add_library(IGNDummyPlugins SHARED DummyPlugins.cc)
+add_library(IGNDummyPlugins SHARED
+  DummyPlugins.cc
+  DummyPluginsOtherTranslationUnit.cc)

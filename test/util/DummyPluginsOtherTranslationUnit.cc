@@ -16,28 +16,11 @@
 */
 
 #include "ignition/common/RegisterPlugin.hh"
+#include "util/DummyPlugins.hh"
 
-namespace ns
-{
+// We use this file to test that the IGN_COMMON_ADD_PLUGIN macro can be used in
+// multiple translation units for the same plugin without any issues.
 
-class Base
-{
-  int test3;
-};
-
-class WrongBase
-{
-  int test3;
-};
-
-class A : public Base
-{
-  float test1;
-  double test2;
-};
-
-}
-
-
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ns::A, ns::WrongBase)
-
+IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyDoubleBase)
+IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyIntBase)
+IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummySetterBase)
