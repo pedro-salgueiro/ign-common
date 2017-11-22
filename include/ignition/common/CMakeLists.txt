@@ -29,6 +29,7 @@ set (headers
   Plugin.hh
   PluginInfo.hh
   PluginLoader.hh
+  PluginMacros.hh
   RegisterPlugin.hh
   SemanticVersion.hh
   SingletonT.hh
@@ -53,6 +54,7 @@ set (headers
 
 set (detail_headers
   detail/Plugin.hh
+  detail/PluginMacros.hh
   detail/RegisterPlugin.hh
   detail/SuppressWarning.hh
 )

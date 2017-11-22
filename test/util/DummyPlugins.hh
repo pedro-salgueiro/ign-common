@@ -49,7 +49,6 @@ class IGNITION_COMMON_VISIBLE DummyDoubleBase
 class DummyIntBase
 {
   public: virtual int MyIntegerValueIs() = 0;
-  IGN_COMMON_SPECIALIZE_INTERFACE(test::util::DummyIntBase)
 };
 
 class DummySetterBase
@@ -57,7 +56,6 @@ class DummySetterBase
   public: virtual void SetName(const std::string &_name) = 0;
   public: virtual void SetDoubleValue(const double _val) = 0;
   public: virtual void SetIntegerValue(const int _val) = 0;
-  IGN_COMMON_SPECIALIZE_INTERFACE(test::util::DummySetterBase)
 };
 
 class DummyMultiPlugin

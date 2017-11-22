@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
-#include "ignition/common/RegisterPlugin.hh"
+#ifndef IGNITION_COMMON_PROVIDEINTERFACES_HH_
+#define IGNITION_COMMON_PROVIDEINTERFACES_HH_
 
-namespace ns
+namespace ignition
 {
-
-class Base
-{
-  int test3;
-};
-
-class A : public Base
-{
-  float test1;
-  double test2;
-};
-
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ns::A, ns::Base)
+  namespace common
+  {
+    /// \brief Inherit this class and pass it a list of the interfaces that your
+    /// class provides. These interfaces will automatically be recognized by the
+    /// PluginLoader when you register your class with one of the plugin
+    /// registration macros.
+    template <typename... Intefaces>
+    class ProvideInterfaces;
+  }
 }
 
+#include <ignition/common/detail/ProvideInterfaces.hh>
 
+#endif
