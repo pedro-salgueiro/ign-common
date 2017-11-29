@@ -1,8 +1,7 @@
 set(static_assert_tests
+  plugin_abstract
+  plugin_no_args
   plugin_no_base_class
-  # TODO Fix FQN name check
-  # plugin_not_fully_qualified_class
-  # plugin_not_fully_qualified_base
   plugin_wrong_base_class
   )
 
@@ -25,10 +24,16 @@ if (UNIX)
 
   # Tests pass if the output contains the expected error
 
+  set_tests_properties(STATIC_ASSERT_plugin_abstract PROPERTIES
+    PASS_REGULAR_EXPRESSION "YOU ARE ATTEMPTING TO REGISTER A PURE ABSTRACT CLASS")
+
+  set_tests_properties(STATIC_ASSERT_plugin_no_args PROPERTIES
+    PASS_REGULAR_EXPRESSION "WITHOUT SPECIFYING A PLUGIN CLASS")
+
   set_tests_properties(STATIC_ASSERT_plugin_no_base_class PROPERTIES
-    PASS_REGULAR_EXPRESSION "is not a base class of")
+    PASS_REGULAR_EXPRESSION "BUT THE INTERFACE IS NOT A BASE CLASS OF THE")
 
   set_tests_properties(STATIC_ASSERT_plugin_wrong_base_class PROPERTIES
-    PASS_REGULAR_EXPRESSION "is not a base class of")
+    PASS_REGULAR_EXPRESSION "BUT THE INTERFACE IS NOT A BASE CLASS OF THE")
 
 endif()

@@ -74,11 +74,19 @@ TEST(PluginLoader, LoadExistingLibrary)
 
   // Make sure the expected interfaces were loaded.
   EXPECT_EQ(4u, pl.InterfacesImplemented().size());
-  EXPECT_EQ(1u, pl.InterfacesImplemented()
-            .count(typeid(::test::util::DummyNameBase).name()));
+  EXPECT_EQ(1u, pl.InterfacesImplemented().count("test::util::DummyNameBase"));
 
   EXPECT_EQ(2u, pl.PluginsImplementing<::test::util::DummyNameBase>().size());
+  EXPECT_EQ(2u, pl.PluginsImplementing("test::util::DummyNameBase").size());
+  EXPECT_EQ(2u, pl.PluginsImplementing(
+              typeid(test::util::DummyNameBase).name(),
+              ignition::common::PluginLoader::MANGLED).size());
+
   EXPECT_EQ(1u, pl.PluginsImplementing<::test::util::DummyDoubleBase>().size());
+  EXPECT_EQ(1u, pl.PluginsImplementing("test::util::DummyDoubleBase").size());
+  EXPECT_EQ(1u, pl.PluginsImplementing(
+              typeid(test::util::DummyDoubleBase).name(),
+              ignition::common::PluginLoader::MANGLED).size());
 
 
   ignition::common::PluginPtr firstPlugin =

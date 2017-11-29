@@ -21,6 +21,10 @@
 // We use this file to test that the IGN_COMMON_ADD_PLUGIN macro can be used in
 // multiple translation units for the same plugin without any issues.
 
-IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyDoubleBase)
-IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyIntBase)
-IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummySetterBase)
+// This also tests that we can add multiple interfaces for a plugin with one
+// macro call.
+
+IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin,
+                      test::util::DummyDoubleBase,
+                      test::util::DummyIntBase,
+                      test::util::DummySetterBase)
