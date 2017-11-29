@@ -79,14 +79,12 @@ TEST(PluginLoader, LoadExistingLibrary)
   EXPECT_EQ(2u, pl.PluginsImplementing<::test::util::DummyNameBase>().size());
   EXPECT_EQ(2u, pl.PluginsImplementing("test::util::DummyNameBase").size());
   EXPECT_EQ(2u, pl.PluginsImplementing(
-              typeid(test::util::DummyNameBase).name(),
-              ignition::common::PluginLoader::MANGLED).size());
+              typeid(test::util::DummyNameBase).name(), false).size());
 
   EXPECT_EQ(1u, pl.PluginsImplementing<::test::util::DummyDoubleBase>().size());
   EXPECT_EQ(1u, pl.PluginsImplementing("test::util::DummyDoubleBase").size());
   EXPECT_EQ(1u, pl.PluginsImplementing(
-              typeid(test::util::DummyDoubleBase).name(),
-              ignition::common::PluginLoader::MANGLED).size());
+              typeid(test::util::DummyDoubleBase).name(), false).size());
 
 
   ignition::common::PluginPtr firstPlugin =
