@@ -30,12 +30,15 @@ set (headers
   PluginInfo.hh
   PluginLoader.hh
   PluginMacros.hh
+  PluginPtr.hh
   RegisterPlugin.hh
   SemanticVersion.hh
   SingletonT.hh
   Skeleton.hh
   SkeletonAnimation.hh
   SkeletonNode.hh
+  SpecializedPlugin.hh
+  SpecializedPluginPtr.hh
   StringUtils.hh
   SubMesh.hh
   SuppressWarning.hh
@@ -43,6 +46,7 @@ set (headers
   SystemPaths.hh
   STLLoader.hh
   SVGLoader.hh
+  TemplateHelpers.hh
   Time.hh
   Timer.hh
   Types.hh
@@ -54,9 +58,13 @@ set (headers
 
 set (detail_headers
   detail/Plugin.hh
+  detail/PluginLoader.hh
   detail/PluginMacros.hh
+  detail/PluginPtr.hh
   detail/RegisterPlugin.hh
+  detail/SpecializedPlugin.hh
   detail/SuppressWarning.hh
+  detail/TemplateHelpers.hh
 )
 
 # FIXME: Some classes fail to build on Windows

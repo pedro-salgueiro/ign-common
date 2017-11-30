@@ -9,3 +9,5 @@ include_directories(.)
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 ign_build_tests(${tests})
+
+target_link_libraries(INTEGRATION_plugin dl)
