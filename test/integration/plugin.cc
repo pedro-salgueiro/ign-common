@@ -31,7 +31,6 @@
 #include "ignition/common/SystemPaths.hh"
 #include "ignition/common/PluginPtr.hh"
 #include "ignition/common/SpecializedPluginPtr.hh"
-#include "ignition/common/Console.hh"
 
 #include "test_config.h"
 #include "DummyPluginsPath.h"
@@ -470,13 +469,17 @@ ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 { \
   void *dlHandle = dlopen(_path.c_str(), \
                           RTLD_NOLOAD | RTLD_LAZY | RTLD_GLOBAL); \
- \
-  if(_isLoaded) \
+  \
+  if (_isLoaded) \
+  { \
     EXPECT_NE(nullptr, dlHandle); \
-  else \
+  } \
+  else /* NOLINT (false positive regarding an else-clause) */ \
+  { \
     EXPECT_EQ(nullptr, dlHandle); \
- \
-  if(dlHandle) \
+  } \
+  \
+  if (dlHandle) \
     dlclose(dlHandle); \
 }
 
