@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
 
-#ifndef IGNITION_COMMON_PLUGINUTILS_HH_
-#define IGNITION_COMMON_PLUGINUTILS_HH_
+#include <limits>
+#include "ignition/common/PluginMacros.hh"
 
-#include <string>
-#include "ignition/common/StringUtils.hh"
+extern "C" {
+  std::size_t DETAIL_IGN_PLUGIN_VISIBLE IGNCOMMONPluginInfoSize =
+    sizeof(ignition::common::PluginInfo);
 
-namespace ignition
-{
-  namespace common
-  {
-    /// \brief Format the name to start with "::"
-    /// \param[in] _name The name of a plugin or interface
-    /// \return The input, but with "::" prepended if it was not there already.
-    inline std::string NormalizeName(const std::string &_name)
-    {
-      std::string name = _name;
-      if (!StartsWith(_name, "::"))
-      {
-        name = std::string("::") + _name;
-      }
-      return name;
-    }
-  }
+  std::size_t DETAIL_IGN_PLUGIN_VISIBLE IGNCOMMONPluginInfoAlignment =
+    alignof(ignition::common::PluginInfo);
+
+  int DETAIL_IGN_PLUGIN_VISIBLE IGNCOMMONPluginAPIVersion =
+    std::numeric_limits<int>::max();
 }
 
+extern "C" std::size_t DETAIL_IGN_PLUGIN_VISIBLE IGNCOMMONMultiPluginInfo(
+    void *, const std::size_t, const std::size_t)
+{
+  return 0u;
+}
 
-#endif
