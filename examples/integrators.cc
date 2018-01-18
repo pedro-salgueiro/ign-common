@@ -175,7 +175,7 @@ void TestPlugins(
 
   if (_integrators.empty())
   {
-    std::cout << "You did not specify and numerical integrator plugins to test "
+    std::cout << "You did not specify any numerical integrator plugins to test "
               << "against!"
 #ifdef HAVE_BOOST_PROGRAM_OPTIONS
               << "\n -- Pass in the -a flag to automatically use all plugins"
