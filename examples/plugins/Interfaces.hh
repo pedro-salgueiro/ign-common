@@ -71,6 +71,40 @@ namespace ignition
         /// \brief Virtual destructor
         public: virtual ~NumericalIntegrator() = default;
       };
+
+      /// \brief A system of ordinary differential equations that each
+      /// NumericalIntegrator implementation can be tested against.
+      struct ODESystem
+      {
+        /// \brief Name of this system
+        public: std::string name;
+
+        /// \brief A system of Ordinary Differential Equations to test the
+        /// numerical integrators.
+        public: NumericalIntegrator::SystemODE ode;
+
+        /// \brief The initial time of the system.
+        public: NumericalIntegrator::Time initialTime;
+
+        /// \brief The initial state of the system.
+        public: NumericalIntegrator::State initialState;
+
+        /// \brief A function that describes the exact solution of the ODE
+        /// system that is being tested.
+        public: NumericalIntegrator::ExactSolution exact;
+      };
+
+      /// \brief This interface allows us to create plugins that can provide
+      /// systems of differential equations to test the numerical integrators
+      /// against.
+      class ODESystemFactory
+      {
+        /// \brief Create a set of systems of ordinary differential equations.
+        public: virtual std::vector<ODESystem> CreateSystems() = 0;
+
+        /// \brief Virtual destructor
+        public: virtual ~ODESystemFactory() = default;
+      };
     }
   }
 }
