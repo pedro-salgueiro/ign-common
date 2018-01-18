@@ -20,7 +20,7 @@ foreach(example_file ${example_files})
 
   add_executable(${example} ${example_file})
 
-  target_link_libraries(${example} PRIVATE ignition-common0::ignition-common0)
+  target_link_libraries(${example} PRIVATE ignition-common2::ignition-common2)
 
   # This is only needed for the examples that use plugins, but it doesn't hurt
   # to set it for all the examples.
