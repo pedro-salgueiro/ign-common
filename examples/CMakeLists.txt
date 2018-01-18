@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 
 # Find the ignition-common library
-find_package(ignition-common0 REQUIRED)
+find_package(ignition-common2 REQUIRED)
 
 add_subdirectory(plugins)
 
