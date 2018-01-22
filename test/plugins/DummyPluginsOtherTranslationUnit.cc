@@ -16,7 +16,7 @@
 */
 
 #include "ignition/common/RegisterPlugin.hh"
-#include "util/DummyPlugins.hh"
+#include "plugins/DummyPlugins.hh"
 
 // We use this file to test that the IGN_COMMON_ADD_PLUGIN macro can be used in
 // multiple translation units for the same plugin without any issues.

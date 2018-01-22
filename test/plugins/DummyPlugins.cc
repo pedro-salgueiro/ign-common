@@ -16,7 +16,7 @@
 */
 
 #include "ignition/common/RegisterPlugin.hh"
-#include "util/DummyPlugins.hh"
+#include "DummyPlugins.hh"
 
 
 namespace test
@@ -24,24 +24,33 @@ namespace test
 namespace util
 {
 
-std::string DummySinglePlugin::MyNameIs()
+std::string DummySinglePlugin::MyNameIs() const
 {
   return std::string("DummySinglePlugin");
 }
 
-std::string DummyMultiPlugin::MyNameIs()
+std::string DummyMultiPlugin::MyNameIs() const
 {
   return name;
 }
 
-double DummyMultiPlugin::MyDoubleValueIs()
+double DummyMultiPlugin::MyDoubleValueIs() const
 {
   return val;
 }
 
-int DummyMultiPlugin::MyIntegerValueIs()
+int DummyMultiPlugin::MyIntegerValueIs() const
 {
   return intVal;
+}
+
+std::unique_ptr<SomeObject> DummyMultiPlugin::GetSomeObject() const
+{
+  std::unique_ptr<SomeObject> object(new SomeObject);
+  object->someInt = this->MyIntegerValueIs();
+  object->someDouble = this->MyDoubleValueIs();
+
+  return object;
 }
 
 void DummyMultiPlugin::SetName(const std::string &_name)
@@ -67,8 +76,12 @@ DummyMultiPlugin::DummyMultiPlugin()
   // Do nothing
 }
 
+// Show that we can add plugins from within a namespace
+IGN_COMMON_ADD_PLUGIN(DummyMultiPlugin, DummyGetSomeObjectBase)
+
 }
 }
 
 IGN_COMMON_ADD_PLUGIN(test::util::DummySinglePlugin, test::util::DummyNameBase)
+
 IGN_COMMON_ADD_PLUGIN(test::util::DummyMultiPlugin, test::util::DummyNameBase)

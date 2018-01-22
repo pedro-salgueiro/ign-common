@@ -16,29 +16,35 @@
 */
 
 // Defining this macro before including ignition/common/SpecializedPluginPtr.hh
-// allows us to test that the low-cost routines are being used to access the
+// allows us to test that the high-speed routines are being used to access the
 // specialized plugin interfaces.
 #define IGNITION_UNITTEST_SPECIALIZED_PLUGIN_ACCESS
 
+#include <string>
+#include <vector>
 #include <gtest/gtest.h>
 #include <dlfcn.h>
 #include <iostream>
+#include "ignition/common/Console.hh"
+#include "ignition/common/Filesystem.hh"
 #include "ignition/common/PluginLoader.hh"
 #include "ignition/common/SystemPaths.hh"
 #include "ignition/common/PluginPtr.hh"
 #include "ignition/common/SpecializedPluginPtr.hh"
-#include "ignition/common/Console.hh"
 
 #include "test_config.h"
-#include "util/DummyPlugins.hh"
+#include "DummyPluginsPath.h"
+#include "plugins/DummyPlugins.hh"
 
 /////////////////////////////////////////////////
 TEST(PluginLoader, LoadBadPlugins)
 {
-  std::string projectPath(PROJECT_BINARY_PATH);
+  std::string dummyPath =
+    ignition::common::copyFromUnixPath(IGN_DUMMY_PLUGIN_PATH);
 
   ignition::common::SystemPaths sp;
-  sp.AddPluginPaths(projectPath + "/test/util");
+  sp.AddPluginPaths(dummyPath);
+
   std::vector<std::string> libraryNames = {
     "IGNBadPluginAPIVersionOld",
     "IGNBadPluginAPIVersionNew",
@@ -59,21 +65,15 @@ TEST(PluginLoader, LoadBadPlugins)
 }
 
 /////////////////////////////////////////////////
-std::string GetPluginLibraryPath()
-{
-  std::string projectPath(PROJECT_BINARY_PATH);
-
-  ignition::common::SystemPaths sp;
-  sp.AddPluginPaths(projectPath + "/test/util");
-  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
-
-  return path;
-}
-
-/////////////////////////////////////////////////
 TEST(PluginLoader, LoadExistingLibrary)
 {
-  const std::string path = GetPluginLibraryPath();
+  std::string dummyPath =
+    ignition::common::copyFromUnixPath(IGN_DUMMY_PLUGIN_PATH);
+
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(dummyPath);
+
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -86,7 +86,7 @@ TEST(PluginLoader, LoadExistingLibrary)
   std::cout << pl.PrettyStr();
 
   // Make sure the expected interfaces were loaded.
-  EXPECT_EQ(4u, pl.InterfacesImplemented().size());
+  EXPECT_EQ(5u, pl.InterfacesImplemented().size());
   EXPECT_EQ(1u, pl.InterfacesImplemented().count("test::util::DummyNameBase"));
 
   EXPECT_EQ(2u, pl.PluginsImplementing<::test::util::DummyNameBase>().size());
@@ -155,6 +155,17 @@ TEST(PluginLoader, LoadExistingLibrary)
   nameBase = secondPlugin->QueryInterface<test::util::DummyNameBase>();
   ASSERT_NE(nullptr, nameBase);
   EXPECT_EQ(std::string("DummyMultiPlugin"), nameBase->MyNameIs());
+
+  test::util::DummyGetSomeObjectBase *objectBase =
+    secondPlugin->QueryInterface<test::util::DummyGetSomeObjectBase>();
+  ASSERT_NE(nullptr, objectBase);
+
+  std::unique_ptr<test::util::SomeObject> object =
+    objectBase->GetSomeObject();
+  EXPECT_EQ(secondPlugin->QueryInterface<test::util::DummyIntBase>()
+                ->MyIntegerValueIs(),
+            object->someInt);
+  EXPECT_NEAR(doubleBase->MyDoubleValueIs(), object->someDouble, 1e-8);
 }
 
 
@@ -173,7 +184,9 @@ using SomeSpecializedPluginPtr =
 /////////////////////////////////////////////////
 TEST(SpecializedPluginPtr, Construction)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -228,7 +241,6 @@ TEST(SpecializedPluginPtr, Construction)
   EXPECT_EQ(nullptr, someInterface);
 }
 
-/////////////////////////////////////////////////
 template <typename PluginPtrType1, typename PluginPtrType2>
 void TestSetAndMapUsage(
     const ignition::common::PluginLoader &loader,
@@ -300,7 +312,9 @@ TEST(PluginPtr, CopyMoveSemantics)
   ignition::common::PluginPtr plugin;
   EXPECT_TRUE(plugin.IsEmpty());
 
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -381,11 +395,28 @@ void CheckSomeValues(
 /////////////////////////////////////////////////
 TEST(PluginPtr, QueryInterfaceSharedPtr)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
   pl.LoadLibrary(path);
+
+  // as_shared_pointer without specialization
+  {
+    ignition::common::PluginPtr plugin =
+      pl.Instantiate("test::util::DummyMultiPlugin");
+
+    std::shared_ptr<test::util::DummyIntBase> int_ptr =
+      plugin->QueryInterfaceSharedPtr<test::util::DummyIntBase>();
+    EXPECT_TRUE(int_ptr.get());
+    EXPECT_EQ(5, int_ptr->MyIntegerValueIs());
+
+    std::shared_ptr<SomeInterface> some_ptr =
+      plugin->QueryInterfaceSharedPtr<SomeInterface>();
+    EXPECT_FALSE(some_ptr.get());
+  }
 
   std::shared_ptr<test::util::DummyIntBase> int_ptr =
       pl.Instantiate("test::util::DummyMultiPlugin")->
@@ -464,7 +495,9 @@ ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 /////////////////////////////////////////////////
 TEST(PluginPtr, LibraryManagement)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  const std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
 
   // Use scoping to destroy somePlugin
   {
