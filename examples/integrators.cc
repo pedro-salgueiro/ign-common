@@ -25,7 +25,7 @@
 #include <ignition/common/PluginLoader.hh>
 #include <ignition/common/SystemPaths.hh>
 
-#include "plugins/Interfaces.hh"
+#include "plugins/integrators.hh"
 
 #ifdef HAVE_BOOST_PROGRAM_OPTIONS
 #include <boost/program_options.hpp>
@@ -315,7 +315,7 @@ int main(int argc, char *argv[])
       "ODESystemFactory interface. Both interfaces can be found in the header\n"
       "ign-common/examples/plugins/Interfaces.hh.\n\n"
       "Custom plugins can be used by passing in the custom plugin library\n"
-      "directory to the -d flag, and the library name(s) to the -p flag,\n"
+      "directory to the -I flag, and the library name(s) to the -p flag,\n"
       "described below";
 
   bpo::options_description desc(usage);

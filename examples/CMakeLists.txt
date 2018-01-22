@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 
+project(examples)
+
 # Find the ignition-common library
 find_package(ignition-common2 REQUIRED)
 
@@ -32,7 +34,8 @@ endforeach()
 
 if(Boost_PROGRAM_OPTIONS_FOUND)
 
-  set(boost_program_options_users integrators)
+  set(boost_program_options_users
+        integrators)
 
   foreach(bpou ${boost_program_options_users})
     target_link_libraries(${bpou} PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
