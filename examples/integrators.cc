@@ -90,8 +90,7 @@ TestResult TestIntegrator(
 {
   const ignition::common::PluginPtr &plugin = _pluginHolder.plugin;
   NumericalIntegrator* integrator =
-      plugin->QueryInterface<NumericalIntegrator>(
-        "ignition::common::examples::NumericalIntegrator");
+      plugin->QueryInterface<NumericalIntegrator>();
 
   if(!integrator)
   {
@@ -190,8 +189,7 @@ void TestPlugins(
   for (const PluginHolder &factory : _factories)
   {
     const std::vector<ODESystem> systems =
-        factory.plugin->QueryInterface<ODESystemFactory>(
-          "ignition::common::examples::ODESystemFactory")->CreateSystems();
+        factory.plugin->QueryInterface<ODESystemFactory>()->CreateSystems();
 
     for (const ODESystem &system : systems)
     {
