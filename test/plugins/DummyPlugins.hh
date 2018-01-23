@@ -30,7 +30,7 @@ namespace test
 namespace util
 {
 
-class IGNITION_COMMON_VISIBLE DummyNameBase
+class DummyNameBase
 {
   public: virtual std::string MyNameIs() const = 0;
 };
@@ -42,7 +42,7 @@ class DummySinglePlugin : public DummyNameBase
 };
 
 
-class IGNITION_COMMON_VISIBLE DummyDoubleBase
+class DummyDoubleBase
 {
   public: virtual double MyDoubleValueIs() const = 0;
 };

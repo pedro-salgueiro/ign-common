@@ -458,6 +458,15 @@ TEST(PluginPtr, QueryInterfaceSharedPtr)
   CheckSomeValues(getInt, getDouble, getName);
 }
 
+
+/////////////////////////////////////////////////
+// The library unloading test consistently fails on Windows. The POSIX standard
+// does not guarantee that a library will be unloaded when the reference count
+// held by libdl drops to zero, so this does not indicate a bug or an issue.
+// Instead, this is simply not behavior that we can expect to get on Windows,
+// even though it seems to succeed consistently on UNIX machines.
+#ifndef _MSC_VER
+
 /////////////////////////////////////////////////
 ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 {
@@ -477,19 +486,19 @@ ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 // EXPECT_EQ(nullptr, dlHandle) is found to fail occasionally, we should
 // consider removing it because it may be unreliable. At the very least, if
 // it fails very infrequently, then we can safely consider the failures to be
-// false negatives.
-#define CHECK_FOR_LIBRARY(_path, _isLoaded)\
-{\
+// false negatives and may want to consider relaxing this test.
+#define CHECK_FOR_LIBRARY(_path, _isLoaded) \
+{ \
   void *dlHandle = dlopen(_path.c_str(), \
-                          RTLD_NOLOAD | RTLD_LAZY | RTLD_GLOBAL);\
-\
-  if(_isLoaded)\
-    EXPECT_NE(nullptr, dlHandle);\
-  else\
-    EXPECT_EQ(nullptr, dlHandle);\
-\
-  if(dlHandle)\
-    dlclose(dlHandle);\
+                          RTLD_NOLOAD | RTLD_LAZY | RTLD_GLOBAL); \
+ \
+  if(_isLoaded) \
+    EXPECT_NE(nullptr, dlHandle); \
+  else \
+    EXPECT_EQ(nullptr, dlHandle); \
+ \
+  if(dlHandle) \
+    dlclose(dlHandle); \
 }
 
 /////////////////////////////////////////////////
@@ -595,6 +604,7 @@ TEST(PluginPtr, LibraryManagement)
   CHECK_FOR_LIBRARY(path, false);
 }
 
+#endif
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)
