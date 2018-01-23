@@ -12,10 +12,12 @@ foreach(plugin_target
     IGNBadPluginAPIVersionOld
     IGNBadPluginSize
     IGNDummyPlugins)
-  target_compile_options(${plugin_target} PRIVATE
-    -fkeep-inline-functions
-    -fno-gnu-unique
-    )
+
+  # We link the plugin libraries to the plugin framework library. If we move
+  # the plugin framework out of the main ign-common library, we should link to
+  # the new plugin framework library instead of the main ign-common library.
+  target_link_libraries(${plugin_target} PRIVATE ${PROJECT_LIBRARY_TARGET_NAME})
+
 endforeach()
 
 # Create a variable for the name of the header which will contain the dummy plugin path.
