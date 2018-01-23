@@ -33,8 +33,12 @@
 #include "ignition/common/SpecializedPluginPtr.hh"
 
 #include "test_config.h"
-#include "DummyPluginsPath.h"
 #include "plugins/DummyPlugins.hh"
+
+// This macro provides the path to the directory containing the test plugins.
+// DETAIL_IGN_DUMMY_PLUGIN_PATH is defined in test/integration/CMakeLists.txt
+#define IGN_DUMMY_PLUGIN_PATH \
+  DETAIL_IGN_DUMMY_PLUGIN_PATH
 
 /////////////////////////////////////////////////
 TEST(PluginLoader, LoadBadPlugins)

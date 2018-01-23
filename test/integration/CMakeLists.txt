@@ -20,4 +20,10 @@ if(TARGET INTEGRATION_plugin)
   # This test uses the DL library, so we need to link it.
   target_link_libraries(INTEGRATION_plugin ${DL_TARGET})
 
+  # This executable needs to be able to find the path to the dummy plugin
+  # libraries, which can only be determined at generation time for
+  # multi-configuration generator types (like Visual Studio).
+  target_compile_definitions(INTEGRATION_plugin PRIVATE
+    "DETAIL_IGN_DUMMY_PLUGIN_PATH=\"$<TARGET_FILE_DIR:IGNDummyPlugins>\"")
+
 endif()
