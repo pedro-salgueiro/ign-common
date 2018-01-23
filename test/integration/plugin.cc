@@ -458,14 +458,13 @@ TEST(PluginPtr, QueryInterfaceSharedPtr)
   CheckSomeValues(getInt, getDouble, getName);
 }
 
-
 /////////////////////////////////////////////////
-// The library unloading test consistently fails on Windows. The POSIX standard
-// does not guarantee that a library will be unloaded when the reference count
-// held by libdl drops to zero, so this does not indicate a bug or an issue.
-// Instead, this is simply not behavior that we can expect to get on Windows,
-// even though it seems to succeed consistently on UNIX machines.
-#ifndef _MSC_VER
+// The macro RTLD_NOLOAD is not part of the POSIX standard, and is a custom
+// addition to glibc-2.2, so the unloading test can only work when we are using
+// glibc-2.2 or higher. The unloading tests fundamentally require the use of the
+// RTLD_NOLOAD feature, because without it, there is no way to observe that a
+// library is not loaded.
+#ifdef RTLD_NOLOAD
 
 /////////////////////////////////////////////////
 ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
