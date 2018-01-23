@@ -170,10 +170,7 @@ TEST(PluginLoader, LoadExistingLibrary)
 
 
 /////////////////////////////////////////////////
-class SomeInterface
-{
-
-};
+class SomeInterface { };
 
 using SomeSpecializedPluginPtr =
     ignition::common::SpecializedPluginPtr<
@@ -490,13 +487,13 @@ ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 { \
   void *dlHandle = dlopen(_path.c_str(), \
                           RTLD_NOLOAD | RTLD_LAZY | RTLD_GLOBAL); \
- \
-  if(_isLoaded) \
+  \
+  if (_isLoaded) \
     EXPECT_NE(nullptr, dlHandle); \
-  else \
+  else /* NOLINT */ \
     EXPECT_EQ(nullptr, dlHandle); \
- \
-  if(dlHandle) \
+  \
+  if (dlHandle) \
     dlclose(dlHandle); \
 }
 
