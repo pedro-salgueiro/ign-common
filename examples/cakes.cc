@@ -154,8 +154,8 @@ bool Oven::InsertCake(Cake &&_cake)
   bakingCake.push_back(std::move(_cake));
   this->bakeStartTime = std::chrono::steady_clock::now();
 
-  std::thread alarm(&SetAlarm);
-  alarm.detach();
+//  std::thread alarm(&SetAlarm, this->alarm);
+//  alarm.detach();
 
   return true;
 }

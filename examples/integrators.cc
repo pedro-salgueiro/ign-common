@@ -314,6 +314,7 @@ int main(int argc, char *argv[])
       "interface, and differential equation plugins must inherit the \n"
       "ODESystemFactory interface. Both interfaces can be found in the header\n"
       "ign-common/examples/plugins/Interfaces.hh.\n\n"
+
       "Custom plugins can be used by passing in the custom plugin library\n"
       "directory to the -I flag, and the library name(s) to the -p flag,\n"
       "described below";
