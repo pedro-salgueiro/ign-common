@@ -242,6 +242,7 @@ TEST(SpecializedPluginPtr, Construction)
   EXPECT_EQ(nullptr, someInterface);
 }
 
+/////////////////////////////////////////////////
 template <typename PluginPtrType1, typename PluginPtrType2>
 void TestSetAndMapUsage(
     const ignition::common::PluginLoader &loader,

@@ -2,6 +2,7 @@ add_library(IGNBadPluginAlign         SHARED BadPluginAlign.cc)
 add_library(IGNBadPluginAPIVersionNew SHARED BadPluginAPIVersionNew.cc)
 add_library(IGNBadPluginAPIVersionOld SHARED BadPluginAPIVersionOld.cc)
 add_library(IGNBadPluginSize          SHARED BadPluginSize.cc)
+add_library(IGNTemplatedPlugins       SHARED TemplatedPlugins.cc)
 add_library(IGNDummyPlugins SHARED
   DummyPlugins.cc
   DummyPluginsOtherTranslationUnit.cc)
@@ -11,6 +12,7 @@ foreach(plugin_target
     IGNBadPluginAPIVersionNew
     IGNBadPluginAPIVersionOld
     IGNBadPluginSize
+    IGNTemplatedPlugins
     IGNDummyPlugins)
 
   # We link the plugin libraries to the plugin framework library. If we move
