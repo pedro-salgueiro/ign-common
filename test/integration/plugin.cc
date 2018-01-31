@@ -16,7 +16,7 @@
 */
 
 // Defining this macro before including ignition/common/SpecializedPluginPtr.hh
-// allows us to test that the low-cost routines are being used to access the
+// allows us to test that the high-speed routines are being used to access the
 // specialized plugin interfaces.
 #define IGNITION_UNITTEST_SPECIALIZED_PLUGIN_ACCESS
 
@@ -34,7 +34,7 @@
 
 #include "test_config.h"
 #include "DummyPluginsPath.h"
-#include "util/DummyPlugins.hh"
+#include "plugins/DummyPlugins.hh"
 
 /////////////////////////////////////////////////
 TEST(PluginLoader, LoadBadPlugins)
@@ -65,22 +65,15 @@ TEST(PluginLoader, LoadBadPlugins)
 }
 
 /////////////////////////////////////////////////
-std::string GetPluginLibraryPath()
+TEST(PluginLoader, LoadExistingLibrary)
 {
   std::string dummyPath =
     ignition::common::copyFromUnixPath(IGN_DUMMY_PLUGIN_PATH);
 
   ignition::common::SystemPaths sp;
   sp.AddPluginPaths(dummyPath);
+
   std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
-
-  return path;
-}
-
-/////////////////////////////////////////////////
-TEST(PluginLoader, LoadExistingLibrary)
-{
-  const std::string path = GetPluginLibraryPath();
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -172,7 +165,9 @@ using SomeSpecializedPluginPtr =
 /////////////////////////////////////////////////
 TEST(SpecializedPluginPtr, Construction)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -300,7 +295,9 @@ TEST(PluginPtr, CopyMoveSemantics)
   ignition::common::PluginPtr plugin;
   EXPECT_TRUE(plugin.IsEmpty());
 
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -381,7 +378,9 @@ void CheckSomeValues(
 /////////////////////////////////////////////////
 TEST(PluginPtr, QueryInterfaceSharedPtr)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
@@ -486,7 +485,10 @@ ignition::common::PluginPtr GetSomePlugin(const std::string &_path)
 /////////////////////////////////////////////////
 TEST(PluginPtr, LibraryManagement)
 {
-  const std::string path = GetPluginLibraryPath();
+  ignition::common::SystemPaths sp;
+  sp.AddPluginPaths(IGN_DUMMY_PLUGIN_PATH);
+  std::string path = sp.FindSharedLibrary("IGNDummyPlugins");
+  ASSERT_FALSE(path.empty());
 
   // Use scoping to destroy somePlugin
   {
