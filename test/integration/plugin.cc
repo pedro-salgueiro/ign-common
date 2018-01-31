@@ -405,7 +405,7 @@ TEST(PluginPtr, QueryInterfaceSharedPtr)
   ignition::common::PluginLoader pl;
   pl.LoadLibrary(path);
 
-  // as_shared_pointer without specialization
+  // QueryInterfaceSharedPtr without specialization
   {
     ignition::common::PluginPtr plugin =
       pl.Instantiate("test::util::DummyMultiPlugin");
