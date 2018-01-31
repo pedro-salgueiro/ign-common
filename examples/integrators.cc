@@ -315,7 +315,7 @@ int main(int argc, char *argv[])
 
       "Custom plugins can be used by passing in the custom plugin library\n"
       "directory to the -I flag, and the library name(s) to the -p flag,\n"
-      "described below";
+      "as described below";
 
   bpo::options_description desc(usage);
   desc.add_options()
