@@ -35,7 +35,8 @@ endforeach()
 if(Boost_PROGRAM_OPTIONS_FOUND)
 
   set(boost_program_options_users
-        integrators)
+        integrators
+        robot)
 
   foreach(bpou ${boost_program_options_users})
     target_link_libraries(${bpou} PRIVATE ${Boost_PROGRAM_OPTIONS_LIBRARIES})
