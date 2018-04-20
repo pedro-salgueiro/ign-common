@@ -47,7 +47,8 @@ message(STATUS "\n\n-- ====== Finding Dependencies ======")
 #--------------------------------------
 # Find ignition-math
 set(IGN_MATH_VER 4)
-ign_find_package(ignition-math${IGN_MATH_VER} REQUIRED)
+# Do not sue IGN_MATH_VER here for colcon compliance. It is used in other cmake files
+ign_find_package(ignition-math4 REQUIRED)
 
 #--------------------------------------
 # Find Tinyxml2
