@@ -8,7 +8,7 @@ project(ignition-common2 VERSION 2.0.0)
 #============================================================================
 # Find ignition-cmake
 #============================================================================
-find_package(ignition-cmake0 REQUIRED)
+find_package(ignition-cmake1 REQUIRED)
 
 #============================================================================
 # Configure the project
@@ -46,7 +46,7 @@ message(STATUS "\n\n-- ====== Finding Dependencies ======")
 
 #--------------------------------------
 # Find ignition-math
-set(IGN_MATH_VER 4)
+set(IGN_MATH_VER 5)
 ign_find_package(ignition-math${IGN_MATH_VER} REQUIRED)
 
 #--------------------------------------

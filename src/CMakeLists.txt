@@ -40,7 +40,7 @@ if(NOT USE_EXTERNAL_TINYXML2)
 endif()
 
 # Create the library target
-ign_add_library(${PROJECT_LIBRARY_TARGET_NAME} ${sources})
+ign_create_core_library(SOURCES ${sources})
 
 # Link the libraries that we always need
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
@@ -131,10 +131,6 @@ if(UNIX AND NOT APPLE)
   endif()
 
 endif()
-
-# Create installation instructions for the library target. This must be called
-# in the same scope that the target is created.
-ign_install_library()
 
 # Build the unit tests
 ign_build_tests(

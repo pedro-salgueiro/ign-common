@@ -12,4 +12,4 @@ if(WIN32)
   )
 endif()
 
-ign_install_all_headers(EXCLUDE ${exclude_headers})
+ign_install_all_headers(EXCLUDE_FILES ${exclude_headers})
