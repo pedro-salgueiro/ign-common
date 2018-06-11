@@ -4,6 +4,7 @@ project(examples)
 
 # Find the ignition-common library
 find_package(ignition-common2 QUIET REQUIRED COMPONENTS events)
+find_package(ignition-math5 QUIET REQUIRED)
 
 add_subdirectory(plugins)
 
@@ -22,7 +23,19 @@ foreach(example_file ${example_files})
 
   add_executable(${example} ${example_file})
 
-  target_link_libraries(${example} PRIVATE ignition-common2::core)
+  if (example_file STREQUAL "events")
+    target_link_libraries(${example}
+      PRIVATE
+        ignition-common2::core
+        ignition-math5::ignition-math5
+    )
+  else()
+    target_link_libraries(${example}
+      PRIVATE
+        ignition-common2::events
+        ignition-math5::ignition-math5
+    )
+  endif()
 
   # This is only needed for the examples that use plugins, but it doesn't hurt
   # to set it for all the examples.
@@ -31,8 +44,6 @@ foreach(example_file ${example_files})
       "IGN_COMMON_EXAMPLES_PLUGIN_LIBDIR=\"${PLUGIN_LIBDIR}\"")
 
 endforeach()
-
-target_link_libraries(events_example ignition-common2::events)
 
 if(Boost_PROGRAM_OPTIONS_FOUND)
 

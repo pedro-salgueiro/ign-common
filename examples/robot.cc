@@ -21,6 +21,9 @@
 
 #include "plugins/robot.hh"
 
+#include <ignition/math/Vector2.hh>
+#include <ignition/math/Vector3.hh>
+
 #include <ignition/common/SpecializedPluginPtr.hh>
 #include <ignition/common/SystemPaths.hh>
 #include <ignition/common/PluginLoader.hh>
