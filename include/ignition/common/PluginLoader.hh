@@ -45,7 +45,7 @@ namespace ignition
       public: ~PluginLoader();
 
       /// \brief Makes a printable string with info about plugins
-      /// \returns a pretty string
+      /// \returns A pretty string
       public: std::string PrettyStr() const;
 
       /// \brief Get demangled names of interfaces that the loader has plugins
@@ -71,27 +71,27 @@ namespace ignition
       /// \param[in] _interface Name of an interface
       /// \param[in] _demangled Specify whether the _interface string is
       /// demangled (default, true) or mangled (false).
-      /// \returns names of plugins that implement the interface
+      /// \returns Names of plugins that implement the interface
       public: std::unordered_set<std::string> PluginsImplementing(
           const std::string &_interface,
           const bool demangled = true) const;
 
       /// \brief Load a library at the given path
       /// \param[in] _pathToLibrary is the path to a libaray
-      /// \returns the set of plugins that have been loaded from the library
+      /// \returns The set of plugins that have been loaded from the library
       public: std::unordered_set<std::string> LoadLibrary(
                   const std::string &_pathToLibrary);
 
       /// \brief Instantiates a plugin for the given plugin name
       ///
       /// \param[in] _plugin name of the plugin to instantiate
-      /// \returns ptr to instantiated plugin
+      /// \returns Pointer to instantiated plugin
       public: PluginPtr Instantiate(const std::string &_pluginName) const;
 
       /// \brief Instantiates a plugin of PluginType for the given plugin name.
       /// This can be used to create a specialized PluginPtr.
       ///
-      /// \param[in] PluginType The specialized type of PluginPtrPtr that you
+      /// \tparam PluginPtrType The specialized type of PluginPtrPtr that you
       /// want to construct.
       /// \param[in] _pluginName The name of the plugin that you want to
       /// instantiate
@@ -154,7 +154,6 @@ namespace ignition
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief PIMPL pointer to class implementation
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::unique_ptr<PluginLoaderPrivate> dataPtr;
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };

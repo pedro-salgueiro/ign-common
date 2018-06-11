@@ -16,13 +16,12 @@
 */
 
 
-#ifndef IGNITION_COMMON_TEST_UTIL_DUMMY_PLUGINS_HH_
-#define IGNITION_COMMON_TEST_UTIL_DUMMY_PLUGINS_HH_
+#ifndef IGNITION_COMMON_TEST_PLUGINS_DUMMY_PLUGINS_HH_
+#define IGNITION_COMMON_TEST_PLUGINS_DUMMY_PLUGINS_HH_
 
 #include <string>
 #include <memory>
 
-#include <ignition/common/Export.hh>
 #include <ignition/common/RegisterPlugin.hh>
 
 namespace test

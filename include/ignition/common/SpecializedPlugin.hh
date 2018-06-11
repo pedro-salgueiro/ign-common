@@ -101,44 +101,65 @@ namespace ignition
       template <class, class> friend class detail::ComposePlugin;
       template <class> friend class TemplatePluginPtr;
 
+      /// \brief Default constructor
+      private: SpecializedPlugin();
+
       /// \brief type is an empty placeholder class which is used by the private
       /// member functions to provide two overloads: a high-performance one for
-      /// SpecInterface, and a normal-performance one for all other Interface
-      /// types.
+      /// the specialized interface, and a normal-performance one for all other
+      /// Interface types.
       private: template <class T> struct type { };
 
       /// \brief Delegate the function to the standard Plugin method
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return Pointer to the interface
       private: template <class Interface>
-               Interface *PrivateGetSpecInterface(type<Interface>);
+               Interface *PrivateQueryInterface(type<Interface> _type);
 
       /// \brief Use a high-speed accessor to provide this specialized interface
-      private: SpecInterface *PrivateGetSpecInterface(type<SpecInterface>);
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return Pointer to the specialized interface
+      private: SpecInterface *PrivateQueryInterface(
+          type<SpecInterface> _type);
 
       /// \brief Delegate the function to the standard Plugin method
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return Pointer to the specialized interface
       private: template <class Interface>
-               const Interface *PrivateGetSpecInterface(type<Interface>) const;
+               const Interface *PrivateQueryInterface(type<Interface> _type)
+               const;
 
       /// \brief Use a high-speed accessor to provide this specialized interface
-      private: const SpecInterface *PrivateGetSpecInterface(
-                   type<SpecInterface>) const;
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return Pointer to the specialized interface
+      private: const SpecInterface *PrivateQueryInterface(
+                   type<SpecInterface> _type) const;
 
       /// \brief Delegate the function to the standard PluginPtr method
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return True if the interface is present.
       private: template <class Interface>
-               bool PrivateHasSpecInterface(type<Interface>) const;
+               bool PrivateHasInterface(type<Interface> _type) const;
 
       /// \brief Use a high-speed accessor to check this specialized interface
-      private: bool PrivateHasSpecInterface(type<SpecInterface>) const;
+      /// \param[in] _type Empty object meant to guide the compiler to pick the
+      /// desired implementation.
+      /// \return True if the interface is present.
+      private: bool PrivateHasInterface(type<SpecInterface> _type) const;
 
       /// \brief Iterator that points to the entry of the specialized interface
-      private:
-      const Plugin::InterfaceMap::iterator privateSpecInterfaceIterator;
-      // Dev note (MXG): The privateSpecInterfaceIterator object must be
+      private: const Plugin::InterfaceMap::iterator
+               privateSpecializedInterfaceIterator;
+
+      // Dev note (MXG): The privateSpecializedInterfaceIterator object must be
       // available to the user during their compile time, so it cannot be hidden
       // using PIMPL. The iterator is const because it must always point to the
       // same entry throughout its entire lifecycle.
-
-      /// \brief Default constructor
-      private: SpecializedPlugin();
     };
   }
 }

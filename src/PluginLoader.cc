@@ -28,9 +28,9 @@
 #endif
 
 #include "ignition/common/Console.hh"
-#include "ignition/common/PluginPtr.hh"
 #include "ignition/common/PluginInfo.hh"
 #include "ignition/common/PluginLoader.hh"
+#include "ignition/common/PluginPtr.hh"
 #include "ignition/common/StringUtils.hh"
 #include "ignition/common/Util.hh"
 #include "ignition/common/Plugin.hh"
