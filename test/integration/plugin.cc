@@ -31,7 +31,7 @@
 #include "ignition/common/PluginPtr.hh"
 #include "ignition/common/SpecializedPluginPtr.hh"
 
-#include "test_config.h"
+#include "test/test_config.h"
 #include "DummyPluginsPath.h"
 #include "plugins/DummyPlugins.hh"
 

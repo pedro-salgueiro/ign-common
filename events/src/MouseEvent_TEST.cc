@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.h"
+#include "test/test_config.h"
 #include "ignition/common/MouseEvent.hh"
 #include "ignition/common/config.hh"
 #include "test/util.hh"

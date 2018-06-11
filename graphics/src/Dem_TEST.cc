@@ -20,7 +20,7 @@
 #include <ignition/math/Vector3.hh>
 
 #include "ignition/common/Dem.hh"
-#include "test_config.h"
+#include "test/test_config.h"
 #include "test/util.hh"
 
 using namespace ignition;

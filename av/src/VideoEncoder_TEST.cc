@@ -16,7 +16,7 @@
 #include <gtest/gtest.h>
 
 #include "ignition/common/VideoEncoder.hh"
-#include "test_config.h"
+#include "test/test_config.h"
 #include "test/util.hh"
 
 using namespace ignition;

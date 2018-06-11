@@ -21,7 +21,7 @@
 #include "ignition/common/SystemPaths.hh"
 
 #include "ignition/common/config.hh"
-#include "test_config.h"
+#include "test/test_config.h"
 
 /////////////////////////////////////////////////
 TEST(PluginLoader, InitialNoInterfacesImplemented)

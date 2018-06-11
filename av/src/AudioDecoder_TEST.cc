@@ -19,7 +19,7 @@
 #include <ignition/common/AudioDecoder.hh>
 
 #include "test/util.hh"
-#include "test_config.h"
+#include "test/test_config.h"
 
 using namespace ignition;
 

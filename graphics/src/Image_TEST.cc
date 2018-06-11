@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Image.hh>
-#include "test_config.h"
+#include "test/test_config.h"
 #include "test/util.hh"
 
 using namespace ignition;

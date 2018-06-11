@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.h"
+#include "test/test_config.h"
 #include "ignition/common/Material.hh"
 #include "ignition/common/Mesh.hh"
 #include "ignition/common/Skeleton.hh"

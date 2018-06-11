@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 #include "tinyxml2.h"
 
-#include "test_config.h"
+#include "test/test_config.h"
 #include "ignition/common/Mesh.hh"
 #include "ignition/common/SubMesh.hh"
 #include "ignition/common/ColladaLoader.hh"
