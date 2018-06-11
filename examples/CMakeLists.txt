@@ -10,7 +10,7 @@ add_subdirectory(plugins)
 file(GLOB example_files "*.cc")
 list(SORT example_files)
 
-find_package(Boost COMPONENTS program_options)
+find_package(Boost OPTIONAL_COMPONENTS program_options)
 if(NOT Boost_PROGRAM_OPTIONS_FOUND)
   message(STATUS "Could not find Boost::program_options. Some examples might "
                  "have a reduced set of features available.")
