@@ -15,8 +15,8 @@
  *
  */
 
-#include <string>
 #include <gts.h>
+#include <string>
 
 #include "ignition/common/Console.hh"
 #include "ignition/common/Mesh.hh"

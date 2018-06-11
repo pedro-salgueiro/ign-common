@@ -15,8 +15,8 @@
  *
 */
 
-#include <functional>
 #include <gtest/gtest.h>
+#include <functional>
 #include <ignition/common/Event.hh>
 #include "test/util.hh"
 
@@ -26,7 +26,7 @@ class EventTest : public ignition::testing::AutoLogFixture { };
 
 int g_callback = 0;
 int g_callback1 = 0;
-common::EventT<void ()> g_event;
+common::EventT<void()> g_event;
 common::ConnectionPtr g_conn;
 common::ConnectionPtr g_conn2;
 
@@ -70,7 +70,7 @@ TEST_F(EventTest, SignalOnce)
 {
   g_callback = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   evt();
 
@@ -82,7 +82,7 @@ TEST_F(EventTest, SignalTwice)
 {
   g_callback = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   evt();
   evt();
@@ -95,7 +95,7 @@ TEST_F(EventTest, SignalN)
 {
   g_callback = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
 
   for (unsigned int i = 0; i < 100; ++i)
@@ -109,7 +109,7 @@ TEST_F(EventTest, Disconnect)
 {
   g_callback = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
 
   conn.reset();
@@ -125,7 +125,7 @@ TEST_F(EventTest, MultiCallback)
   g_callback = 0;
   g_callback1 = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   common::ConnectionPtr conn1 = evt.Connect(std::bind(&callback1));
 
@@ -141,7 +141,7 @@ TEST_F(EventTest, MultiCallbackDisconnect)
   g_callback = 0;
   g_callback1 = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   common::ConnectionPtr conn1 = evt.Connect(std::bind(&callback1));
   conn.reset();
@@ -158,7 +158,7 @@ TEST_F(EventTest, MultiCallbackReconnect)
   g_callback = 0;
   g_callback1 = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   common::ConnectionPtr conn1 = evt.Connect(std::bind(&callback1));
   conn.reset();
@@ -176,7 +176,7 @@ TEST_F(EventTest, ManyChanges)
   g_callback = 0;
   g_callback1 = 0;
 
-  common::EventT<void ()> evt;
+  common::EventT<void()> evt;
   common::ConnectionPtr conn = evt.Connect(std::bind(&callback));
   common::ConnectionPtr conn1 = evt.Connect(std::bind(&callback1));
   conn.reset();

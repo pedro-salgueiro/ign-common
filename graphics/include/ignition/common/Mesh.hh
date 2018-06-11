@@ -17,6 +17,7 @@
 #ifndef IGNITION_COMMON_MESH_HH_
 #define IGNITION_COMMON_MESH_HH_
 
+#include <memory>
 #include <vector>
 #include <string>
 
