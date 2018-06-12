@@ -16,6 +16,7 @@
  */
 
 #include <gts.h>
+
 #include <string>
 
 #include "ignition/common/Console.hh"
