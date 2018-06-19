@@ -84,6 +84,7 @@ TEST(PluginLoader, LoadExistingLibrary)
 
   // Make sure the expected plugins were loaded.
   std::unordered_set<std::string> pluginNames = pl.LoadLibrary(path);
+  ASSERT_GT(pluginNames.size(), 0u);
   EXPECT_EQ(1u, pluginNames.count("test::util::DummySinglePlugin"));
   EXPECT_EQ(1u, pluginNames.count("test::util::DummyMultiPlugin"));
 
@@ -191,7 +192,8 @@ TEST(SpecializedPluginPtr, Construction)
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
-  pl.LoadLibrary(path);
+  auto pluginNames = pl.LoadLibrary(path);
+  ASSERT_GT(pluginNames.size(), 0u);
 
   SomeSpecializedPluginPtr plugin(
         pl.Instantiate("test::util::DummyMultiPlugin"));
@@ -320,7 +322,8 @@ TEST(PluginPtr, CopyMoveSemantics)
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
-  pl.LoadLibrary(path);
+  auto pluginNames = pl.LoadLibrary(path);
+  ASSERT_GT(pluginNames.size(), 0u);
 
   plugin = pl.Instantiate("test::util::DummySinglePlugin");
   EXPECT_FALSE(plugin.IsEmpty());
@@ -403,7 +406,8 @@ TEST(PluginPtr, QueryInterfaceSharedPtr)
   ASSERT_FALSE(path.empty());
 
   ignition::common::PluginLoader pl;
-  pl.LoadLibrary(path);
+  auto pluginNames = pl.LoadLibrary(path);
+  ASSERT_GT(pluginNames.size(), 0u);
 
   // QueryInterfaceSharedPtr without specialization
   {
@@ -573,6 +577,7 @@ TEST(PluginPtr, LibraryManagement)
     {
       interface = GetSomePlugin(path)->QueryInterfaceSharedPtr<
           test::util::DummyNameBase>();
+      ASSERT_NE(nullptr, interface);
       EXPECT_EQ("DummyMultiPlugin", interface->MyNameIs());
 
       CHECK_FOR_LIBRARY(path, true);
